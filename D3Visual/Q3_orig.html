@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <title>D3 EDA (CDN) — student vibe</title>
+  <style>
+    body { font-family:-apple-system, Segoe UI, Roboto, sans-serif; margin:18px; }
+    h1 { margin-bottom:4px; }
+    h2 { margin:28px 0 6px; }
+    .chart { margin-bottom:26px; }
+    .axis text { font-size:11px; }
+    .axis path, .axis line { stroke:#999; shape-rendering:crispEdges; }
+    .legend { font-size:12px; }
+    .tooltip { position:absolute; pointer-events:none; background:rgba(0,0,0,.8); color:#fff;
+               padding:6px 8px; border-radius:4px; font-size:12px; white-space:nowrap;
+               transform:translate(-50%,-120%); opacity:0; }
+    .msg { color:#b00; font-size:13px; }
+  </style>
+</head>
+<body>
+  <h1>Exploratory Data Analysis (D3)</h1>
+
+  <h2>1) Tests over time (by month)</h2><div id="chart1" class="chart"></div>
+  <h2>2) Tests over time by <code>panel</code> (stacked)</h2><div id="chart2" class="chart"></div>
+  <h2>3) Days from symptom onset</h2><div id="chart3" class="chart"></div>
+  <h2>4) IgG agreement over time (100% stacked)</h2><div id="chart4" class="chart"></div>
+  <h2>5) % Correct by <code>sample_id</code> (True* vs others)</h2><div id="chart5" class="chart"></div>
+
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <script src="https://d3js.org/d3-fetch.v3.min.js"></script>
+
+  <script>
+  // messy sytle
+  const CSV_PATH = "eda_output2.csv"; // #check file name
+
+  // some trial n error
+  const W=960, H=420, M={top:36,right:20,bottom:70,left:70};
+  const PAD=0.12;
+
+  const tip = d3.select("body").append("div").attr("class","tooltip");
+
+  // dates are weird, so i just try few formats… it works for me :)
+  const pYMD=d3.utcParse("%Y-%m-%d"), pYMDHMS=d3.utcParse("%Y-%m-%d %H:%M:%S"), pMDY=d3.utcParse("%m/%d/%y");
+  function okDate(v){
+    if(v instanceof Date) return v;
+    if(typeof v==="string") return pYMD(v) || pYMDHMS(v) || pMDY(v) || new Date(v);
+    return null;
+  }
+
+  // igg categories, using colors i saw in some blog
+  const iggCats=["True Positive","True Negative","False Positive","False Negative","NA"];
+  const iggColor=d3.scaleOrdinal().domain(iggCats).range(["#6baed6","#74c476","#fd8d3c","#e34a33","#bdbdbd"]);
+
+  // NOTE: i copied some code below that i wrote wrong earlier, leaving it here commented for myself
+  // const iggColorWrong=d3.scaleOrdinal(["True Positive","True Negative","False Positive","False Negative","NA"], d3.schemeTableau10); 
+
+
+  d3.csv(CSV_PATH, d3.autoType).then((raw)=>{
+    // console.log("rows:", raw.length)
+
+    // make values kinda clean. not perfect but seems fine
+    const data = raw.map(d=>({
+      ...d,
+      date_performed: okDate(d.date_performed),
+      igg_agree: d.igg_agree ?? "NA",
+      panel: d.panel ?? "NA",
+      sample_id: d.sample_id ?? "NA",
+      days_from_symptom: (d.days_from_symptom!=null? +d.days_from_symptom : null)
+    }));
+
+    // helper-ish. i keep it simple
+    function mk(svgSel){
+      const s=d3.select(svgSel).append("svg").attr("width",W).attr("height",H);
+      return s.append("g").attr("transform",`translate(${M.left},${M.top})`);
+    }
+    function xTime(svg,x,ih){
+      svg.append("g").attr("class","axis").attr("transform",`translate(0,${ih})`)
+        .call(d3.axisBottom(x).ticks(d3.utcMonth.every(2)).tickFormat(d3.utcFormat("%Y-%m")));
+    }
+    function yAxis(svg,y,fmt){
+      svg.append("g").attr("class","axis").call(fmt? d3.axisLeft(y).ticks(5,fmt): d3.axisLeft(y));
+    }
+    function msg(where,txt){ d3.select(where).append("div").attr("class","msg").text(txt); }
+    function show(e,html){ tip.html(html).style("left",e.pageX+"px").style("top",e.pageY+"px").style("opacity",1); }
+    function hide(){ tip.style("opacity",0); }
+    function labels(svg,xLab,yLab){
+      const iw=W-M.left-M.right, ih=H-M.top-M.bottom;
+      svg.append("text").attr("x",(iw/2)).attr("y",-10).attr("text-anchor","middle").style("font-weight",600).text(`${yLab} by ${xLab}`);
+      svg.append("text").attr("x",(iw/2)).attr("y",ih+50).attr("text-anchor","middle").text(xLab);
+      svg.append("text").attr("transform","rotate(-90)").attr("x",-ih/2).attr("y",-50).attr("text-anchor","middle").text(yLab);
+    }
+
+ 
+    // function bw(x){ return Math.max(2,(x(d3.utcMonth.offset(x.domain()[0],1))-x(x.domain()[0]))*(1-PAD)); } 
+    // this worked ebfore
+
+
+    // 1) counts by month
+    ;(function(){
+      const good = data.filter(d=>d.date_performed instanceof Date && !isNaN(+d.date_performed));
+      if(!good.length) return msg("#chart1","No valid date_performed values.");
+
+      // i just group by month and count
+      const month=d=>d3.utcMonth(d);
+      const rows=d3.rollups(good, v=>v.length, d=>month(d.date_performed))
+                   .map(([m,c])=>({m:new Date(m), c}))
+                   .sort((a,b)=>d3.ascending(a.m,b.m));
+
+      const iw=W-M.left-M.right, ih=H-M.top-M.bottom;
+      const x=d3.scaleUtc().domain(d3.extent(rows,d=>d.m)).range([0,iw]);
+      const y=d3.scaleLinear().domain([0,d3.max(rows,d=>d.c)]).nice().range([ih,0]);
+      const svg=mk("#chart1");
+      const barW=Math.max(2,(x(d3.utcMonth.offset(x.domain()[0],1))-x(x.domain()[0]))*(1-PAD)); // yea it's a bit weird but ok
+
+      svg.selectAll("rect").data(rows).join("rect")
+        .attr("x",d=>x(d.m)+1)
+        .attr("y",d=>y(d.c))
+        .attr("width",barW)
+        .attr("height",d=>y(0)-y(d.c))
+        .attr("fill","#444")
+        .on("mousemove",(e,d)=>show(e,`${d.m.toISOString().slice(0,7)}: ${d.c}`))
+        .on("mouseleave",hide);
+
+      xTime(svg,x,ih); yAxis(svg,y); labels(svg,"date_performed (month)","count");
+    })();
+
+    // 2) stacked by panel
+    ;(function(){
+      const f=data.filter(d=>d.date_performed instanceof Date && d.panel);
+      if(!f.length) return msg("#chart2","No panel/time data.");
+      const month=d=>d3.utcMonth(d);
+      const keys=Array.from(new Set(f.map(d=>d.panel))).sort();
+      const color=d3.scaleOrdinal(keys, d3.schemeTableau10);
+
+      const mat=d3.rollups(f, v=>{
+        const r={m:month(v[0].date_performed)};
+        const g=d3.rollup(v, vv=>vv.length, d=>d.panel);
+        keys.forEach(k=>r[k]=g.get(k)||0);
+        return r;
+      }, d=>month(d.date_performed)).map(([,r])=>r).sort((a,b)=>d3.ascending(a.m,b.m));
+
+      const iw=W-M.left-M.right, ih=H-M.top-M.bottom;
+      const x=d3.scaleUtc().domain(d3.extent(mat,d=>d.m)).range([0,iw]);
+      const series=d3.stack().keys(keys)(mat);
+      const y=d3.scaleLinear().domain([0,d3.max(series,s=>d3.max(s,d=>d[1]))]).nice().range([ih,0]);
+      const svg=mk("#chart2");
+      const bw=Math.max(2,(x(d3.utcMonth.offset(x.domain()[0],1))-x(x.domain()[0]))*(1-PAD));
+
+      svg.append("g").selectAll("g").data(series).join("g").attr("fill",s=>color(s.key))
+        .selectAll("rect").data(d=>d).join("rect")
+          .attr("x",d=>x(d.data.m)+1)
+          .attr("y",d=>y(d[1]))
+          .attr("width",bw)
+          .attr("height",d=>y(d[0])-y(d[1]))
+          .on("mousemove",(e,d)=>{
+            const k=e.currentTarget.parentNode.__data__.key; // yeah this is kinda hacky but works
+            show(e,`${d.data.m.toISOString().slice(0,7)}<br>${k}: ${d[1]-d[0]}`)
+          })
+          .on("mouseleave",hide);
+
+      xTime(svg,x,ih); yAxis(svg,y); labels(svg,"date_performed (month)","count");
+    })();
+
+    // 3) histogram days_from_symptom
+    ;(function(){
+      const arr=data.map(d=>d.days_from_symptom).filter(Number.isFinite);
+      if(!arr.length) return msg("#chart3","No numeric days_from_symptom.");
+
+      const iw=W-M.left-M.right, ih=H-M.top-M.bottom;
+      const x=d3.scaleLinear().domain(d3.extent(arr)).nice().range([0,iw]);
+      const bins=d3.bin().domain(x.domain()).thresholds(30)(arr);
+      const y=d3.scaleLinear().domain([0,d3.max(bins,d=>d.length)]).nice().range([ih,0]);
+      const svg=mk("#chart3");
+
+      svg.selectAll("rect").data(bins).join("rect")
+        .attr("x",d=>x(d.x0)+1)
+        .attr("y",d=>y(d.length))
+        .attr("width",d=>Math.max(1,x(d.x1)-x(d.x0)-2))
+        .attr("height",d=>y(0)-y(d.length))
+        .attr("fill","#444")
+        .on("mousemove",(e,d)=>show(e,`${d.x0}–${d.x1}: ${d.length}`))
+        .on("mouseleave",hide);
+
+      svg.append("g").attr("class","axis").attr("transform",`translate(0,${y(0)})`).call(d3.axisBottom(x));
+      yAxis(svg,y);
+      labels(svg,"days_from_symptom","count");
+    })();
+
+    // 4) 100% stacked igg_agree over time
+    ;(function(){
+      const f=data.filter(d=>d.date_performed instanceof Date);
+      if(!f.length) return msg("#chart4","No valid dates for igg_agree chart.");
+
+      const month=d=>d3.utcMonth(d);
+      const rows=d3.rollups(f,v=>{
+        const total=v.length;
+        const g=d3.rollup(v,vv=>vv.length,d=> iggCats.includes(d.igg_agree)? d.igg_agree : "NA");
+        const r={m:month(v[0].date_performed)};
+        iggCats.forEach(c=> r[c]=(g.get(c)||0)/total );
+        return r;
+      }, d=>month(d.date_performed)).map(([,r])=>r).sort((a,b)=>d3.ascending(a.m,b.m));
+
+      const iw=W-M.left-M.right, ih=H-M.top-M.bottom;
+      const x=d3.scaleUtc().domain(d3.extent(rows,d=>d.m)).range([0,iw]);
+      const series=d3.stack().keys(iggCats)(rows);
+      const y=d3.scaleLinear().domain([0,1]).range([ih,0]);
+      const svg=mk("#chart4");
+      const bw=Math.max(2,(x(d3.utcMonth.offset(x.domain()[0],1))-x(x.domain()[0]))*(1-PAD));
+
+      svg.append("g").selectAll("g").data(series).join("g").attr("fill",d=>iggColor(d.key))
+        .selectAll("rect").data(d=>d).join("rect")
+          .attr("x",d=>x(d.data.m)+1)
+          .attr("y",d=>y(d[1]))
+          .attr("width",bw)
+          .attr("height",d=>y(d[0])-y(d[1]))
+          .on("mousemove",(e,d)=>{
+            const k=e.currentTarget.parentNode.__data__.key;
+            show(e,`${d.data.m.toISOString().slice(0,7)}<br>${k}: ${d3.format(".0%")(d[1]-d[0])}`)
+          })
+          .on("mouseleave",hide);
+
+      xTime(svg,x,ih); yAxis(svg,y,"%"); labels(svg,"date_performed (month)","proportion");
+    })();
+
+    // 5) % correct by sample_id
+    ;(function(){
+      const rows=d3.rollups(data.filter(d=>d.sample_id), v=>{
+        const n=v.length;
+        const correct=v.filter(r=> typeof r.igg_agree==="string" && r.igg_agree.startsWith("True")).length;
+        return correct/(n||1);
+      }, d=>d.sample_id).map(([sample_id,pct])=>({sample_id,pct}));
+
+      if(!rows.length) return msg("#chart5","No sample_id data.");
+
+      rows.sort((a,b)=>d3.descending(a.pct,b.pct));
+      const topN=150, take=rows.slice(0,topN);
+
+      const iw=Math.max(W-M.left-M.right, take.length*8), ih=H-M.top-M.bottom;
+      const x=d3.scaleBand().domain(take.map(d=>d.sample_id)).range([0,iw]).padding(0.1);
+      const y=d3.scaleLinear().domain([0,1]).range([ih,0]);
+
+      const svgOuter=d3.select("#chart5").append("div").style("overflow-x","auto").append("svg")
+        .attr("width",iw+M.left+M.right).attr("height",H);
+      const svg=svgOuter.append("g").attr("transform",`translate(${M.left},${M.top})`);
+
+      svg.selectAll("rect").data(take).join("rect")
+        .attr("x",d=>x(d.sample_id))
+        .attr("y",d=>y(d.pct))
+        .attr("width",x.bandwidth())
+        .attr("height",d=>y(0)-y(d.pct))
+        .attr("fill","#444")
+        .on("mousemove",(e,d)=>show(e,`${d.sample_id}: ${d3.format(".1%")(d.pct)}`))
+        .on("mouseleave",hide);
+
+      svg.append("g").attr("class","axis").attr("transform",`translate(0,${y(0)})`).call(d3.axisBottom(x).tickValues([]));
+      yAxis(svg,y,"%"); labels(svg,`sample_id (top ${topN})`,"% Correct");
+    })();
+
+  }).catch((err)=>{
+    // i messed up file name before and got this, leaving it here so i remember
+    // d3.select("#chart1").append("div").text("csv broken"); // this was ugly, using class now
+    console.error(err);
+    d3.select("#chart1").append("div").attr("class","msg").text("Error loading CSV. See console.");
+  });
+  </script>
+</body>
+</html>
