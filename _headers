@@ -5,7 +5,7 @@
   Referrer-Policy: strict-origin-when-cross-origin
 
 /*.html
-  Cache-Control: public, max-age=3600
+  Cache-Control: no-cache, no-store, must-revalidate
   Content-Type: text/html; charset=utf-8
 
 /*.css

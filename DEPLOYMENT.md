@@ -70,7 +70,7 @@ Ensure your DNS is managed by Cloudflare for `pikemd.com`:
 ### Cache Configuration
 
 Headers are configured for optimal caching:
-- HTML files: 1 hour cache
+- HTML files: No cache (always fetch fresh)
 - CSS/JS files: 24 hours cache
 - CSV/PDF files: 24 hours cache
 - Security headers enabled (XSS protection, frame options, etc.)

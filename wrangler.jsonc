@@ -34,7 +34,7 @@
   // Headers for proper MIME types and caching
   "headers": {
     "/**/*.html": {
-      "Cache-Control": "public, max-age=3600"
+      "Cache-Control": "no-cache, no-store, must-revalidate"
     },
     "/**/*.css": {
       "Cache-Control": "public, max-age=86400"
