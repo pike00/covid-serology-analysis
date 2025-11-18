@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Data Documentation - COVID-19 Serology Dataset</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-white min-h-screen">
+  <div class="container mx-auto px-4 py-12">
+    <!-- Back Button -->
+    <div class="mb-8">
+      <a href="../index.html"
+         class="inline-flex items-center text-gray-600 hover:text-gray-800 font-semibold transition-colors">
+        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+        </svg>
+        Back to Home
+      </a>
+    </div>
+
+    <!-- Header -->
+    <div class="text-center mb-12">
+      <h1 class="text-5xl font-bold text-gray-800 mb-4">Data Documentation</h1>
+      <p class="text-lg text-gray-600 max-w-3xl mx-auto">
+        Comprehensive field definitions and data schema for the COVID-19 serology dataset
+      </p>
+    </div>
+
+    <!-- Download Files Section -->
+    <div class="grid md:grid-cols-2 gap-6 mb-8">
+      <div class="bg-white rounded-xl shadow-lg p-6 hover:shadow-2xl transition-all">
+        <div class="flex items-start">
+          <div class="bg-red-100 rounded-lg p-3 mr-4">
+            <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+            </svg>
+          </div>
+          <div class="flex-1">
+            <h3 class="text-xl font-bold text-gray-800 mb-2">Field Documentation (PDF)</h3>
+            <p class="text-gray-600 text-sm mb-4">Complete field definitions in PDF format</p>
+            <a href="fields.pdf"
+               target="_blank"
+               class="inline-flex items-center text-red-600 hover:text-red-800 font-semibold transition-colors">
+              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+              </svg>
+              View PDF
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-xl shadow-lg p-6 hover:shadow-2xl transition-all">
+        <div class="flex items-start">
+          <div class="bg-green-100 rounded-lg p-3 mr-4">
+            <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+            </svg>
+          </div>
+          <div class="flex-1">
+            <h3 class="text-xl font-bold text-gray-800 mb-2">Field Documentation (Excel)</h3>
+            <p class="text-gray-600 text-sm mb-4">Complete field definitions in Excel format</p>
+            <a href="fields.xlsx"
+               download
+               class="inline-flex items-center text-green-600 hover:text-green-800 font-semibold transition-colors">
+              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+              </svg>
+              Download Excel
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Field Descriptions Table -->
+    <div class="bg-white rounded-xl shadow-lg p-8">
+      <h2 class="text-3xl font-bold text-gray-800 mb-6">Field Definitions</h2>
+      <p class="text-gray-600 mb-6">
+        The COVID-19 serology dataset contains the following fields. Each field is described below with its data type and purpose.
+      </p>
+
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
+            <tr>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                Field Name
+              </th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                Type
+              </th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                Description
+              </th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            <tr class="hover:bg-gray-50">
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">manufacturer</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">string</td>
+              <td class="px-6 py-4 text-sm text-gray-700">Name of manufacturer or company that makes this product.</td>
+            </tr>
+            <tr class="hover:bg-gray-50">
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">device</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">string</td>
+              <td class="px-6 py-4 text-sm text-gray-700">This is the proprietary name, or trade name, of the cleared device.</td>
+            </tr>
+            <tr class="hover:bg-gray-50">
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">date_performed</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">date</td>
+              <td class="px-6 py-4 text-sm text-gray-700">This is the date the test was performed.</td>
+            </tr>
+            <tr class="hover:bg-gray-50">
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">evaluation_id</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">string</td>
+              <td class="px-6 py-4 text-sm text-gray-700">The unique identifier for each evaluation.</td>
+            </tr>
+            <tr class="hover:bg-gray-50">
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">lot_number</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">string</td>
+              <td class="px-6 py-4 text-sm text-gray-700">The manufacturer's unique identification of the lot(s) from which the tested devices were drawn.</td>
+            </tr>
+            <tr class="hover:bg-gray-50">
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">panel</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">string</td>
+              <td class="px-6 py-4 text-sm text-gray-700">The testing program's unique identification of the panel of clinical samples against which the devices were tested.</td>
+            </tr>
+            <tr class="hover:bg-gray-50">
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">sample_no</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">integer</td>
+              <td class="px-6 py-4 text-sm text-gray-700">The sequence in which the sample was tested.</td>
+            </tr>
+            <tr class="hover:bg-gray-50">
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">sample_id</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">string</td>
+              <td class="px-6 py-4 text-sm text-gray-700">The unique ID of the sample in the panel.</td>
+            </tr>
+            <tr class="hover:bg-gray-50">
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">type</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">string</td>
+              <td class="px-6 py-4 text-sm text-gray-700">The sample material.</td>
+            </tr>
+            <tr class="hover:bg-gray-50">
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">group</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">string</td>
+              <td class="px-6 py-4 text-sm text-gray-700">Describes the portion of the panel the sample was from. E.g. "Positives," "Negatives," "HIV+", "Respiratory panel," etc.</td>
+            </tr>
+            <tr class="hover:bg-gray-50">
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">days_from_symptom</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">string</td>
+              <td class="px-6 py-4 text-sm text-gray-700">Days from symptom onset to blood collection.</td>
+            </tr>
+            <tr class="hover:bg-gray-50">
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">igm_result</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">string</td>
+              <td class="px-6 py-4 text-sm text-gray-700">The test result for qualitative detection of IgM antibodies.</td>
+            </tr>
+            <tr class="hover:bg-gray-50">
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">igg_result</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">string</td>
+              <td class="px-6 py-4 text-sm text-gray-700">The test result for qualitative detection of IgG antibodies.</td>
+            </tr>
+            <tr class="hover:bg-gray-50">
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">iga_result</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">string</td>
+              <td class="px-6 py-4 text-sm text-gray-700">The test result for qualitative detection of IgA antibodies.</td>
+            </tr>
+            <tr class="hover:bg-gray-50">
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">pan_result</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">string</td>
+              <td class="px-6 py-4 text-sm text-gray-700">The test result for qualitative detection of Pan-Ig antibodies.</td>
+            </tr>
+            <tr class="hover:bg-gray-50">
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">igm_igg_result</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">string</td>
+              <td class="px-6 py-4 text-sm text-gray-700">The test result for qualitative detection of (IgM / IgG) combined antibodies.</td>
+            </tr>
+            <tr class="hover:bg-gray-50">
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">igm_iga_result</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">string</td>
+              <td class="px-6 py-4 text-sm text-gray-700">The test result for qualitative detection of (IgM / IgA) combined antibodies.</td>
+            </tr>
+            <tr class="hover:bg-gray-50">
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">control</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">string</td>
+              <td class="px-6 py-4 text-sm text-gray-700">The result of the control line on the test.</td>
+            </tr>
+            <tr class="hover:bg-gray-50">
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">igm_titer</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">integer</td>
+              <td class="px-6 py-4 text-sm text-gray-700">The CDC spike titer for IgM in the sample.</td>
+            </tr>
+            <tr class="hover:bg-gray-50">
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">igg_titer</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">integer</td>
+              <td class="px-6 py-4 text-sm text-gray-700">The CDC spike titer for IgG in the sample.</td>
+            </tr>
+            <tr class="hover:bg-gray-50">
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">pan_titer</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">integer</td>
+              <td class="px-6 py-4 text-sm text-gray-700">The CDC spike titer for Pan-Ig in the sample.</td>
+            </tr>
+            <tr class="hover:bg-gray-50">
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">igm_truth</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">string</td>
+              <td class="px-6 py-4 text-sm text-gray-700">The true qualitative IgM result.</td>
+            </tr>
+            <tr class="hover:bg-gray-50">
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">igg_truth</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">string</td>
+              <td class="px-6 py-4 text-sm text-gray-700">The true qualitative IgG result.</td>
+            </tr>
+            <tr class="hover:bg-gray-50">
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">antibody_truth</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">string</td>
+              <td class="px-6 py-4 text-sm text-gray-700">The true qualitative antibody presence result.</td>
+            </tr>
+            <tr class="hover:bg-gray-50">
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">igm_agree</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">string</td>
+              <td class="px-6 py-4 text-sm text-gray-700">Agreement between igm_result and igm_truth.</td>
+            </tr>
+            <tr class="hover:bg-gray-50">
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">igg_agree</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">string</td>
+              <td class="px-6 py-4 text-sm text-gray-700">Agreement between igg_result and igg_truth.</td>
+            </tr>
+            <tr class="hover:bg-gray-50">
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">iga_agree</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">string</td>
+              <td class="px-6 py-4 text-sm text-gray-700">Agreement between iga_result and antibody_truth.</td>
+            </tr>
+            <tr class="hover:bg-gray-50">
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">pan_agree</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">string</td>
+              <td class="px-6 py-4 text-sm text-gray-700">Agreement between pan_result and antibody_truth.</td>
+            </tr>
+            <tr class="hover:bg-gray-50">
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">igm_igg_agree</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">string</td>
+              <td class="px-6 py-4 text-sm text-gray-700">Agreement between igm_igg_result and antibody_truth.</td>
+            </tr>
+            <tr class="hover:bg-gray-50">
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">igm_iga_agree</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">string</td>
+              <td class="px-6 py-4 text-sm text-gray-700">Agreement between igm_iga_result and antibody_truth.</td>
+            </tr>
+            <tr class="hover:bg-gray-50">
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">antibody_agree</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">string</td>
+              <td class="px-6 py-4 text-sm text-gray-700">Agreement between all antibody results and antibody_truth. Any positive makes the result positive. All results must be negative for the overall result to be considered negative.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Key Information -->
+    <div class="mt-8 bg-blue-50 border-l-4 border-blue-500 p-6 rounded-lg">
+      <div class="flex items-start">
+        <svg class="w-6 h-6 text-blue-600 mr-3 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>
+        <div>
+          <h4 class="font-semibold text-blue-900 mb-2">About This Dataset</h4>
+          <p class="text-blue-800 text-sm mb-2">
+            This dataset contains comprehensive information about COVID-19 serological test evaluations, including test results,
+            device information, and validation metrics. The data includes multiple antibody types (IgM, IgG, IgA, Pan-Ig) and
+            their combinations, along with ground truth values and agreement metrics for validation.
+          </p>
+          <p class="text-blue-800 text-sm">
+            <strong>Key Fields:</strong> The dataset includes test results, manufacturer information, evaluation details,
+            antibody titers, ground truth values, and agreement metrics for comprehensive analysis of test performance.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
