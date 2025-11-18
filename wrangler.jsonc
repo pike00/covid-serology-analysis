@@ -1,0 +1,54 @@
+{
+  // Cloudflare Pages configuration for COVID-19 Serology Testing project
+  "name": "covid-serology-testing",
+  "compatibility_date": "2024-01-01",
+
+  // Pages configuration
+  "pages_build_output_dir": ".",
+
+  // Custom domain configuration
+  "routes": [
+    {
+      "pattern": "covidtesting.pikemd.com/*",
+      "custom_domain": true
+    }
+  ],
+
+  // Environment variables (if needed)
+  "vars": {
+    "ENVIRONMENT": "production"
+  },
+
+  // Build configuration
+  "build": {
+    "command": "",
+    "cwd": ".",
+    "watch_paths": [
+      "**/*.html",
+      "**/*.css",
+      "**/*.js",
+      "data/**/*.csv"
+    ]
+  },
+
+  // Headers for proper MIME types and caching
+  "headers": {
+    "/**/*.html": {
+      "Cache-Control": "public, max-age=3600"
+    },
+    "/**/*.css": {
+      "Cache-Control": "public, max-age=86400"
+    },
+    "/**/*.js": {
+      "Cache-Control": "public, max-age=86400"
+    },
+    "/**/*.csv": {
+      "Cache-Control": "public, max-age=86400",
+      "Content-Type": "text/csv"
+    },
+    "/**/*.pdf": {
+      "Cache-Control": "public, max-age=86400",
+      "Content-Type": "application/pdf"
+    }
+  }
+}

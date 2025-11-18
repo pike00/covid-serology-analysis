@@ -1,0 +1,30 @@
+/*
+  X-Frame-Options: SAMEORIGIN
+  X-Content-Type-Options: nosniff
+  X-XSS-Protection: 1; mode=block
+  Referrer-Policy: strict-origin-when-cross-origin
+
+/*.html
+  Cache-Control: public, max-age=3600
+  Content-Type: text/html; charset=utf-8
+
+/*.css
+  Cache-Control: public, max-age=86400
+  Content-Type: text/css; charset=utf-8
+
+/*.js
+  Cache-Control: public, max-age=86400
+  Content-Type: application/javascript; charset=utf-8
+
+/*.csv
+  Cache-Control: public, max-age=86400
+  Content-Type: text/csv; charset=utf-8
+  Content-Disposition: attachment
+
+/*.pdf
+  Cache-Control: public, max-age=86400
+  Content-Type: application/pdf
+
+/*.xlsx
+  Cache-Control: public, max-age=86400
+  Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
