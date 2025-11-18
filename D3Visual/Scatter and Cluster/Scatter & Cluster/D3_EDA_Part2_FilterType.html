@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <title>IgM / IgG — Scatter + Elbow + K-Means (Combined)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <style>
+    body { font-family:-apple-system, Segoe UI, Roboto, sans-serif; margin:18px; }
+    h2 { margin:18px 0 8px; font-size:18px; font-weight:700; }
+    .grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(520px, 1fr)); gap:18px; }
+    .card { border:1px solid #eee; border-radius:12px; padding:12px; box-shadow:0 1px 2px rgba(0,0,0,.05); }
+    .card h4 { margin:0 0 8px; font-weight:600; }
+    svg { display:block; }
+    .axis text { font-size:11px; }
+    .axis path, .axis line { stroke:#d0d0d0; }
+    .legend { display:flex; gap:10px; flex-wrap:wrap; margin-top:6px; }
+    .legend-item { display:inline-flex; align-items:center; gap:6px; font-size:12px; }
+    .swatch { width:12px; height:12px; border-radius:3px; display:inline-block; }
+    .error { color:#b00020; margin:8px 0; }
+
+    .toolbar { position:sticky; top:0; background:#fff; padding:10px 12px; border:1px solid #eee; border-radius:10px; box-shadow:0 1px 2px rgba(0,0,0,.05); margin-bottom:12px; display:flex; gap:18px; align-items:center; flex-wrap:wrap; z-index:5; }
+    .group { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+    .group > .label { font-weight:700; margin-right:4px; }
+    .pill { display:inline-flex; align-items:center; gap:8px; padding:6px 10px; border:1px solid #e4e4e4; border-radius:999px; font-size:13px; }
+    #panel-menu,#type-menu,#cluster-menu { display:flex; gap:8px; flex-wrap:wrap; }
+    .pill-all { margin-left:auto; }
+  </style>
+</head>
+<body>
+
+<div id="msg" class="error"></div>
+
+<div class="toolbar">
+  <div class="group" style="flex:1">
+    <span class="label">Panels:</span>
+    <div id="panel-menu"></div>
+  </div>
+  <div class="group">
+    <span class="label">Type:</span>
+    <div id="type-menu"></div>
+  </div>
+  <div class="group">
+    <span class="label">Clusters:</span>
+    <div id="cluster-menu"></div>
+  </div>
+</div>
+
+<h2>1) Scatter (Raw TP vs FP)</h2>
+<div class="grid">
+  <div class="card" id="card-igm-basic"><h4>IgM — Raw Scatter</h4><div id="igm-basic"></div></div>
+  <div class="card" id="card-igg-basic"><h4>IgG — Raw Scatter</h4><div id="igg-basic"></div></div>
+</div>
+
+<h2>2) K-Means Clusters (k=6)</h2>
+<div class="grid">
+  <div class="card" id="card-igm-kmeans"><h4>IgM — K-Means Clusters</h4><div id="igm-kmeans"></div><div id="igm-legend" class="legend"></div></div>
+  <div class="card" id="card-igg-kmeans"><h4>IgG — K-Means Clusters</h4><div id="igg-kmeans"></div><div id="igg-legend" class="legend"></div></div>
+</div>
+
+<h2>3) Elbow (k vs Inertia)</h2>
+<div class="grid">
+  <div class="card" id="card-igm-elbow"><h4>IgM — Elbow</h4><div id="igm-elbow"></div></div>
+  <div class="card" id="card-igg-elbow"><h4>IgG — Elbow</h4><div id="igg-elbow"></div></div>
+</div>
+
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const FILES = {
+    igmRaw:"df_igm_metrics.csv", iggRaw:"df_igg_metrics.csv",
+    igmElbow:"igm_elbow.csv",    iggElbow:"igg_elbow.csv",
+    igmClusters:"igm_clusters_k6.csv", iggClusters:"igg_clusters_k6.csv"
+  };
+  const BASE = new URL(".", location.href);
+  const urlOf = f => new URL(f, BASE).toString();
+
+  const W=520, H=420, M={top:22,right:16,bottom:44,left:48};
+  const iw=W-M.left-M.right, ih=H-M.top-M.bottom;
+
+  const msg = document.getElementById("msg");
+  const showError = t => { console.error(t); msg.textContent = t; };
+  const color = d3.scaleOrdinal(d3.schemeSet2);
+
+  const devKey = name => (name||"").trim().toLowerCase();
+
+  function mk(sel){
+    return d3.select(sel).html("")
+      .append("svg").attr("width",W).attr("height",H)
+      .append("g").attr("transform",`translate(${M.left},${M.top})`);
+  }
+  function axes(svg,x,y,xLabel,yLabel){
+    svg.append("g").attr("class","axis").attr("transform",`translate(0,${ih})`).call(d3.axisBottom(x).ticks(6));
+    svg.append("g").attr("class","axis").call(d3.axisLeft(y).ticks(6));
+    svg.append("text").attr("x",iw/2).attr("y",ih+34).attr("text-anchor","middle").text(xLabel);
+    svg.append("text").attr("transform","rotate(-90)").attr("x",-ih/2).attr("y",-38).attr("text-anchor","middle").text(yLabel);
+  }
+
+  function drawCentroidX(svg, x, y, size=8, stroke="red", w=1.2){
+    svg.append("line").attr("x1",x-size).attr("y1",y-size).attr("x2",x+size).attr("y2",y+size).attr("stroke",stroke).attr("stroke-width",w).attr("stroke-linecap","round");
+    svg.append("line").attr("x1",x-size).attr("y1",y+size).attr("x2",x+size).attr("y2",y-size).attr("stroke",stroke).attr("stroke-width",w).attr("stroke-linecap","round");
+  }
+
+  function legend(containerSel, rows){
+    const ids = Array.from(new Set(rows.map(d => +d.cluster))).sort(d3.ascending);
+    const cont = d3.select(containerSel).html("");
+    ids.forEach(c => {
+      const item = cont.append("div").attr("class","legend-item");
+      item.append("span").attr("class","swatch").style("background", color(c));
+      item.append("span").text(`cluster ${c}`);
+    });
+  }
+
+  // ---- infer test type from device name ----
+  function inferType(name) {
+    const n = (name || "").toLowerCase();
+    if (n.includes("elisa")) return "ELISA";
+    if (n.includes("lateral flow") || n.includes("flow assay")) return "Lateral Flow";
+    if (n.includes("rapid") || n.includes("cassette") || n.includes("device") || n.includes("diagnostic")) return "Rapid Test";
+    if (n.includes("colloidal gold")) return "Colloidal Gold";
+    if (n.includes("quantum dot")) return "Quantum Dot Immunoassay";
+    if (n.includes("clia") || n.includes("chemiluminescence")) return "CLIA / Chemiluminescent";
+    return "Other";
+  }
+
+  // ---- Basic Scatter helpers ----
+  function normalizeRaw(d, fallbackPanel){
+    const fp = d.FP ?? d.fp ?? d.fpr ?? d.false_positive_rate;
+    const tp = d.TP ?? d.tp ?? d.tpr ?? d.true_positive_rate;
+    const device = d.device ?? d.Device ?? "";
+    return {
+      key: devKey(device),
+      device,
+      FP: +fp,
+      TP: +tp,
+      panel: d.panel ?? fallbackPanel,
+      type: inferType(device)
+    };
+  }
+
+  function drawBasicScatter(sel, rows, colorVal){
+    const svg = mk(sel);
+    const x = d3.scaleLinear().domain([0,1]).range([0,iw]);
+    const y = d3.scaleLinear().domain([0,1]).range([ih,0]);
+    axes(svg,x,y,"False Positive Rate (FP)","True Positive Rate (TP)");
+
+    svg.selectAll("circle").data(rows).join("circle")
+      .attr("cx",d=>x(d.FP)).attr("cy",d=>y(d.TP)).attr("r",4).attr("fill",colorVal)
+      .append("title").text(d=>`${d.device||"(device)"} • ${d.type}\nFP=${d.FP.toFixed(3)}  TP=${d.TP.toFixed(3)}`);
+  }
+
+  // ---- K-Means Scatter (from attachment 2) ----
+  function drawKMeansScatter(sel, legendSel, rows){
+    const data = rows.map(d => ({ device:d.device??"", FP:+d.FP, TP:+d.TP, cluster:+d.cluster, panel:d.panel??"", type:d.type??"Other" }))
+                     .filter(d => Number.isFinite(d.FP)&&Number.isFinite(d.TP));
+    const svg = mk(sel);
+    const x = d3.scaleLinear().domain([0,1]).range([0,iw]);
+    const y = d3.scaleLinear().domain([0,1]).range([ih,0]);
+    axes(svg,x,y,"False Positive Rate (FP)","True Positive Rate (TP)");
+
+    svg.selectAll("circle.pt").data(data).join("circle")
+      .attr("cx",d=>x(d.FP)).attr("cy",d=>y(d.TP)).attr("r",4).attr("fill",d=>color(d.cluster))
+      .append("title").text(d=>`${d.device||"(device)"} • ${d.type} • panel ${d.panel||"?"} • cluster ${d.cluster}\nFP=${d.FP.toFixed(3)}  TP=${d.TP.toFixed(3)}`);
+
+    const cents = d3.rollups(data, v => ({ FP: d3.mean(v, d=>d.FP), TP: d3.mean(v, d=>d.TP) }), d => d.cluster)
+                    .map(([cluster, c]) => ({ cluster:+cluster, ...c }));
+    cents.forEach(c => drawCentroidX(svg, x(c.FP), y(c.TP), 9, "red", 1.2));
+
+    legend(legendSel, data);
+  }
+
+  // ---- Elbow ----
+  function drawElbow(sel, data){
+    const svg=mk(sel);
+    const x=d3.scaleLinear().domain(d3.extent(data, d=>+d.k)).nice().range([0,iw]);
+    const y=d3.scaleLinear().domain([0, d3.max(data, d=>+d.inertia)]).nice().range([ih,0]);
+    axes(svg,x,y,"k (clusters)","Inertia");
+    const line=d3.line().x(d=>x(+d.k)).y(d=>y(+d.inertia));
+    svg.append("path").datum(data).attr("fill","none").attr("stroke","#444").attr("stroke-width",2).attr("d",line);
+    svg.selectAll("circle.pt").data(data).join("circle")
+      .attr("cx",d=>x(+d.k)).attr("cy",d=>y(+d.inertia)).attr("r",3).attr("fill","#444")
+      .append("title").text(d=>`k=${d.k}, inertia=${(+d.inertia).toFixed(2)}`);
+  }
+
+  // ---- UI helpers ----
+  function setCardVisible(containerId, visible){
+    const el = document.getElementById(containerId);
+    if (!el) return;
+    el.style.display = visible ? "" : "none";
+  }
+
+  function buildCheckboxes(containerSel, values, activeSet, onChange, isPanelMenu=false){
+    const cont = d3.select(containerSel).html("");
+    const sorted = Array.from(values).sort((a,b)=> (a+''>b+'')?1:-1);
+
+    sorted.forEach(v => {
+      const id = `${containerSel.replace('#','')}-${String(v).replace(/\W+/g,'-')}`;
+      const pill = cont.append("label").attr("class","pill");
+      pill.append("input").attr("type","checkbox").attr("id",id)
+        .property("checked", activeSet.has(v))
+        .on("change", function(){
+          if (this.checked) activeSet.add(v); else activeSet.delete(v);
+          if (isPanelMenu) syncAllPanelsCheckbox(containerSel, values, activeSet);
+          onChange();
+        });
+      pill.append("span").text(v);
+    });
+
+    if (isPanelMenu) {
+      const allPill = cont.append("label").attr("class","pill pill-all");
+      const allId = containerSel.replace('#','')+"-all";
+      allPill.append("input").attr("type","checkbox").attr("id", allId)
+        .property("checked", activeSet.size === values.size)
+        .on("change", function(){
+          if (this.checked) values.forEach(v => activeSet.add(v));
+          else activeSet.clear();
+          buildCheckboxes(containerSel, values, activeSet, onChange, true);
+          onChange();
+        });
+      allPill.append("span").text("All Panels");
+    }
+  }
+  function syncAllPanelsCheckbox(containerSel, values, activeSet){
+    const allId = containerSel.replace('#','')+"-all";
+    const allEl = document.getElementById(allId);
+    if (allEl) allEl.checked = (activeSet.size === values.size);
+  }
+
+  // ---- State ----
+  let state = {
+    panels: new Set(),  activePanels: new Set(),
+    types:  new Set(),  activeTypes:  new Set(),
+    clusters: new Set(), activeClusters: new Set(),
+    igmRaw: [], iggRaw: [],
+    igmClu: [], iggClu: [],
+    igmEl: [],  iggEl:  [],
+    // device -> cluster lookups for raw filtering by active clusters
+    cluByDevice: { igm:new Map(), igg:new Map() }
+  };
+
+  function ensurePanelsTypesClusters() {
+    const allPanels = new Set();
+    const allTypes  = new Set();
+    const allClusters = new Set();
+
+    // panels + types + clusters from cluster rows
+    [...state.igmClu, ...state.iggClu].forEach(d => {
+      if (d.panel) allPanels.add(String(d.panel));
+      allTypes.add(String(d.type ?? "Other"));
+      if (Number.isFinite(+d.cluster)) allClusters.add(+d.cluster);
+    });
+
+    if (allPanels.size === 0) { allPanels.add("IgM"); allPanels.add("IgG"); }
+    state.panels = allPanels;           state.activePanels = new Set(allPanels);
+    state.types  = allTypes.size ? allTypes : new Set(["Other"]);
+    state.activeTypes = new Set(state.types);
+    state.clusters = allClusters.size ? allClusters : new Set([0,1,2,3,4,5,6]);
+    state.activeClusters = new Set(state.clusters);
+  }
+
+  // --- Filters ---
+  function filterKMeans(rows){
+    return rows.filter(r =>
+      state.activePanels.has(String(r.panel ?? "")) &&
+      state.activeTypes.has(String(r.type ?? "Other")) &&
+      state.activeClusters.has(+r.cluster)
+    );
+  }
+
+  // raw scatter: panel + type + cluster(filter via device->cluster map)
+  function filterBasic(rawRows, fallbackPanel, which){
+    const lookup = state.cluByDevice[which]; // 'igm' or 'igg'
+    const wantAllClusters = state.activeClusters.size === state.clusters.size;
+
+    return rawRows
+      .map(r => normalizeRaw(r, fallbackPanel))
+      .filter(r =>
+        Number.isFinite(r.FP) &&
+        Number.isFinite(r.TP) &&
+        state.activePanels.has(String(r.panel ?? "")) &&
+        state.activeTypes.has(String(r.type ?? "Other")) &&
+        (
+          // if all clusters are selected, don't gate on cluster;
+          // else, only include if we can map device -> cluster and it's active
+          wantAllClusters ||
+          (lookup.has(r.key) && state.activeClusters.has(+lookup.get(r.key)))
+        )
+      );
+  }
+
+  function renderFiltered(){
+    // RAW scatter (filtered by Panel + Type + Clusters via device->cluster map)
+    const igmRawF = filterBasic(state.igmRaw, "IgM", "igm");
+    const iggRawF = filterBasic(state.iggRaw, "IgG", "igg");
+    drawBasicScatter("#igm-basic", igmRawF, "#1f77b4");
+    drawBasicScatter("#igg-basic", iggRawF, "#ff7f0e");
+
+    // K-MEANS (already filtered)
+    const igmCluF = filterKMeans(state.igmClu);
+    const iggCluF = filterKMeans(state.iggClu);
+    drawKMeansScatter("#igm-kmeans", "#igm-legend", igmCluF);
+    drawKMeansScatter("#igg-kmeans", "#igg-legend", iggCluF);
+
+    // Elbow visibility (not filtered; shown per panel selection)
+    const hasIgM = [...state.activePanels].some(p => /igm/i.test(p) || p === "IgM");
+    const hasIgG = [...state.activePanels].some(p => /igg/i.test(p) || p === "IgG");
+    setCardVisible("card-igm-elbow", hasIgM);
+    setCardVisible("card-igg-elbow", hasIgG);
+    drawElbow("#igm-elbow", state.igmEl);
+    drawElbow("#igg-elbow", state.iggEl);
+
+    setCardVisible("card-igm-kmeans", hasIgM && igmCluF.length > 0);
+    setCardVisible("card-igg-kmeans", hasIgG && iggCluF.length > 0);
+  }
+
+  // ---- Load + bootstrap ----
+  Promise.all([
+    d3.csv(urlOf(FILES.igmRaw), d3.autoType),
+    d3.csv(urlOf(FILES.iggRaw), d3.autoType),
+    d3.csv(urlOf(FILES.igmClusters), d3.autoType),
+    d3.csv(urlOf(FILES.iggClusters), d3.autoType),
+    d3.csv(urlOf(FILES.igmElbow), d3.autoType),
+    d3.csv(urlOf(FILES.iggElbow), d3.autoType)
+  ])
+  .then(([igmRaw, iggRaw, igmClu, iggClu, igmEl, iggEl]) => {
+    state.igmRaw = igmRaw; state.iggRaw = iggRaw;
+
+    // infer type on cluster rows and build device->cluster maps per panel
+    igmClu.forEach(d => { d.type = inferType(d.device); if (d.panel == null || d.panel === "") d.panel = "IgM"; });
+    iggClu.forEach(d => { d.type = inferType(d.device); if (d.panel == null || d.panel === "") d.panel = "IgG"; });
+    state.igmClu = igmClu; state.iggClu = iggClu;
+
+    state.cluByDevice.igm.clear();
+    state.cluByDevice.igg.clear();
+    igmClu.forEach(d => state.cluByDevice.igm.set(devKey(d.device), +d.cluster));
+    iggClu.forEach(d => state.cluByDevice.igg.set(devKey(d.device), +d.cluster));
+
+    state.igmEl = igmEl; state.iggEl = iggEl;
+
+    ensurePanelsTypesClusters();
+    buildCheckboxes("#panel-menu",   state.panels,   state.activePanels,   renderFiltered, true);
+    buildCheckboxes("#type-menu",    state.types,    state.activeTypes,    renderFiltered);
+    buildCheckboxes("#cluster-menu", state.clusters, state.activeClusters, renderFiltered);
+
+    renderFiltered();
+  })
+  .catch(err => { showError("Failed to load CSVs."); console.error(err); });
+});
+</script>
+</body>
+</html>
