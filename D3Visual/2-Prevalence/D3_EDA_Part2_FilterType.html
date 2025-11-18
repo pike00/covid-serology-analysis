@@ -67,9 +67,9 @@
 <script>
 document.addEventListener("DOMContentLoaded", () => {
   const FILES = {
-    igmRaw:"df_igm_metrics.csv", iggRaw:"df_igg_metrics.csv",
-    igmElbow:"igm_elbow.csv",    iggElbow:"igg_elbow.csv",
-    igmClusters:"igm_clusters_k6.csv", iggClusters:"igg_clusters_k6.csv"
+    igmRaw:"../../data/df_igm_metrics.csv", iggRaw:"../../data/df_igg_metrics.csv",
+    igmElbow:"../../data/igm_elbow.csv",    iggElbow:"../../data/igg_elbow.csv",
+    igmClusters:"../../data/igm_clusters_k6.csv", iggClusters:"../../data/igg_clusters_k6.csv"
   };
   const BASE = new URL(".", location.href);
   const urlOf = f => new URL(f, BASE).toString();

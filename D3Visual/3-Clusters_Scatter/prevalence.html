@@ -42,7 +42,7 @@
 <body>
   <h1>Serology PPV/NPV Interactive</h1>
   <div class="small">
-    Load <code>tests.csv</code> (or <code>test.csv</code>) in the same folder.
+    Load <code>covid19serology.csv</code> from the data folder.
     Choose a test, adjust prevalence, or add a confirmatory test.
     <div id="error"></div>
   </div>
@@ -334,13 +334,13 @@ async function loadCSV(){
   }
 
   let rows = [];
-  try { rows = await fetchTable('tests.csv'); }
+  try { rows = await fetchTable('../../data/covid19serology.csv'); }
   catch(e1){
-    try { rows = await fetchTable('test.csv'); }
+    try { rows = await fetchTable('../../data/covid19serology.csv'); }
     catch(e2){
       const el = document.getElementById('error');
       el.style.display='block';
-      el.textContent='Could not load tests.csv or test.csv.';
+      el.textContent='Could not load covid19serology.csv.';
       rows = [];
     }
   }
