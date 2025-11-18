@@ -1,0 +1,192 @@
+---
+title: "Exploratory Data Analysis"
+format: html
+---
+
+
+```{r}
+library(tidyverse)
+library(here)
+
+d <- readr::read_csv("covid19serology.csv")
+
+glimpse(d)
+
+d <- 
+    d |> 
+    mutate(date_performed = lubridate::parse_date_time(date_performed, "%m/%d/%y"))
+
+
+d <-
+d |> 
+    mutate(antibody_agree = case_when(
+        antibody_agree == "TN" ~ "True Negative", 
+        antibody_agree == "FN" ~ "False Negative", 
+        antibody_agree == "TP" ~ "True Positive", 
+        antibody_agree == "FP" ~ "False Positive", 
+    ))  |> 
+    mutate(igm_agree = case_when(
+        igm_agree == "TN" ~ "True Negative", 
+        igm_agree == "FN" ~ "False Negative", 
+        igm_agree == "TP" ~ "True Positive", 
+        igm_agree == "FP" ~ "False Positive", 
+    ))  |> 
+    mutate(igg_agree = case_when(
+        igg_agree == "TN" ~ "True Negative", 
+        igg_agree == "FN" ~ "False Negative", 
+        igg_agree == "TP" ~ "True Positive", 
+        igg_agree == "FP" ~ "False Positive", 
+    ))
+
+```
+
+
+# Basic Counts and Amounts
+
+```{r}
+
+d |> 
+  count(manufacturer, sort=T)
+  
+
+d |> 
+  count(device, sort=T)
+
+
+
+d |> 
+  ggplot(aes(x = date_performed)) + geom_histogram()
+
+d |> 
+  count(panel)
+
+
+
+d |> 
+  count(group, sort=T) |> 
+  print(n=Inf)
+
+
+# test result
+
+d |> 
+    select(igm_result) |> 
+    count(igm_result)
+
+
+d |> 
+    select(igg_result) |> 
+    count(igg_result)
+
+
+
+d |> 
+    select(iga_result) |> 
+    count(iga_result)
+
+
+
+# ground truth
+d |> 
+    count(igm_truth)
+
+
+d |> 
+    count(igg_truth)
+
+
+
+
+
+
+```
+
+
+
+# Temporal Relationship of Date Test was completed versus panel 
+
+```{r}
+
+
+d |> 
+  select(panel, date_performed)  |> 
+  ggplot(aes(x = date_performed, fill=panel)) + geom_histogram()
+
+
+
+```
+
+
+# How far from symptoms were these tests done? 
+```{r}
+
+d |> 
+  select(days_from_symptom) |> 
+  drop_na() |> 
+  ggplot(aes(x=days_from_symptom)) + 
+  geom_histogram()
+
+
+
+```
+
+
+
+# "Contingency table" for IgG + IgM 
+NB: Not a truth contingency table because this is not the ground truth. Where there is a discrepancy likely represents a difference in timing from symptom onset or test characteristics. 
+
+```{r}
+
+d |> 
+    select(igm_result, igg_result) |> 
+    filter(igm_result %in% c("Positive", "Negative")) |> 
+    filter(igg_result %in% c("Positive", "Negative")) |> 
+    count(igm_result, igg_result)
+
+
+d |> 
+    count(antibody_agree)
+
+
+
+```
+
+
+# Does the date the test performed affect the accuracy of the test? 
+
+```{r}
+d |> 
+    ggplot(aes(x = date_performed, fill = igg_agree)) + 
+    geom_histogram(position="fill")
+```
+
+Perhaps - looks like there is an element of temporality here, might be interesting to investigate
+
+
+# Does the sample source vary in accuracy? 
+
+```{r}
+
+d |> 
+    select(sample_id, igg_agree) |> 
+    group_by(sample_id) |> 
+    mutate(Cor = case_when(
+        str_starts(igg_agree, "True") ~ "Correct",
+        TRUE ~ "Incorrect"
+    ))  |> 
+        count(Cor) |> 
+    mutate(perc = n / sum(n)) |> 
+    select(-n) |> 
+    pivot_wider(names_from=Cor, values_from=perc) |> 
+    arrange(desc(Correct)) |> 
+    mutate(sample_id = fct(sample_id)) |> 
+    ggplot(aes(x = fct_reorder(sample_id, Correct), y = Correct)) + 
+    geom_col()
+
+
+```
+
+It appears that while most tests have reasonable accuracy, some are quite crummy overall. Could be used to regress/classify these tests. 
+
+
+
