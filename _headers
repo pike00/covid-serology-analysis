@@ -22,7 +22,7 @@
   Content-Disposition: attachment
 
 /*.pdf
-  Cache-Control: public, max-age=86400
+  Cache-Control: no-cache, no-store, must-revalidate
   Content-Type: application/pdf
 
 /*.xlsx
