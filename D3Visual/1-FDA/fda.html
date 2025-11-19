@@ -3,28 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>COVID-19 Serology Test Performance Data</title>
+    <title>FDA Test Analysis - COVID-19 Serology</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body {
-            font-family: "Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
-            margin: 20px;
-            background-color: #f5f5f5;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            margin: 0;
+            background-color: #f9fafb;
         }
-        h1 {
-            color: #112e51;
-            border-bottom: 3px solid #0071bc;
-            padding-bottom: 10px;
-        }
-        .info {
-            background-color: #e7f6f8;
-            border-left: 4px solid #02bfe7;
-            padding: 15px;
-            margin: 20px 0;
+        .main-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 1rem;
         }
         .table-container {
             background-color: white;
-            padding: 20px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border-radius: 0.75rem;
             overflow-x: auto;
         }
         table {
@@ -33,13 +29,14 @@
             font-size: 13px;
         }
         th {
-            background-color: #112e51;
+            background-color: #10b981;
             color: white;
-            padding: 10px;
+            padding: 12px;
             text-align: left;
             font-weight: 600;
             position: sticky;
             top: 0;
+            font-size: 0.875rem;
         }
         td {
             padding: 8px 10px;
@@ -53,7 +50,7 @@
         }
         .manufacturer {
             font-weight: 600;
-            color: #0071bc;
+            color: #10b981;
         }
         .high-performance {
             background-color: #e7f6e7;
@@ -69,56 +66,105 @@
             font-size: 13px;
         }
         .filter-container {
-            margin: 20px 0;
-            padding: 15px;
+            margin: 1.5rem 0;
+            padding: 1.5rem;
             background-color: white;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border-radius: 0.75rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            align-items: center;
         }
         .filter-container label {
-            margin-right: 10px;
             font-weight: 600;
+            color: #374151;
+            font-size: 0.875rem;
         }
         .filter-container select, .filter-container input {
-            margin-right: 20px;
-            padding: 5px 10px;
-            border: 1px solid #ddd;
-            border-radius: 3px;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+        }
+        .filter-container button {
+            padding: 0.5rem 1rem;
+            background-color: #10b981;
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            cursor: pointer;
+            font-size: 0.875rem;
+        }
+        .filter-container button:hover {
+            background-color: #059669;
         }
         .stats-box {
             background: white;
-            padding: 15px;
-            margin: 20px 0;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border-radius: 0.75rem;
         }
         .stats-box h3 {
             margin-top: 0;
-            color: #112e51;
+            color: #1f2937;
+            font-weight: 700;
         }
     </style>
 </head>
 <body>
-    <h1>COVID-19 Serology Test Performance Data</h1>
+    <!-- Header Section -->
+    <div class="bg-white border-b border-gray-200">
+        <div class="main-content py-6">
+            <!-- Back Button -->
+            <div class="mb-4">
+                <a href="../index.html" class="inline-flex items-center text-green-600 hover:text-green-800 font-semibold transition-colors">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                    </svg>
+                    Back to D3 Visualizations
+                </a>
+            </div>
 
-
-    <div class="filter-container">
-        <label>Filter by Antibody:</label>
-        <select id="antibodyFilter" onchange="filterTable()">
-            <option value="all">All</option>
-            <option value="IGG">IgG</option>
-            <option value="IGM">IgM</option>
-            <option value="ANTIBODY">Combined</option>
-        </select>
-
-        <label>Search Manufacturer:</label>
-        <input type="text" id="manufacturerSearch" onkeyup="filterTable()" placeholder="Enter name">
-
-        <label>Min Sensitivity:</label>
-        <input type="number" id="minSens" onchange="filterTable()" min="0" max="100" step="5" placeholder="0">%
-
-        <button onclick="resetFilters()">Reset</button>
+            <!-- Title -->
+            <div class="text-center">
+                <h1 class="text-4xl font-bold text-gray-800 mb-3">FDA Test Analysis</h1>
+                <p class="text-lg text-gray-600 max-w-3xl mx-auto">
+                    Comprehensive analysis of FDA-approved COVID-19 serological test devices with performance metrics
+                </p>
+            </div>
+        </div>
     </div>
 
-    <div class="table-container">
+    <div class="main-content py-8">
+        <div class="filter-container">
+            <div class="flex items-center gap-2">
+                <label>Filter by Antibody:</label>
+                <select id="antibodyFilter" onchange="filterTable()">
+                    <option value="all">All</option>
+                    <option value="IGG">IgG</option>
+                    <option value="IGM">IgM</option>
+                    <option value="ANTIBODY">Combined</option>
+                </select>
+            </div>
+
+            <div class="flex items-center gap-2">
+                <label>Search Manufacturer:</label>
+                <input type="text" id="manufacturerSearch" onkeyup="filterTable()" placeholder="Enter name">
+            </div>
+
+            <div class="flex items-center gap-2">
+                <label>Min Sensitivity:</label>
+                <input type="number" id="minSens" onchange="filterTable()" min="0" max="100" step="5" placeholder="0">
+                <span class="text-gray-600">%</span>
+            </div>
+
+            <button onclick="resetFilters()">Reset Filters</button>
+        </div>
+
+        <div class="table-container">
         <table id="perfTable">
             <thead>
                 <tr>
@@ -3964,5 +4010,6 @@
             filterTable();
         }
     </script>
+    </div>
 </body>
 </html>
