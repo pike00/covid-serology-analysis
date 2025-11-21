@@ -268,6 +268,10 @@
       sliders.
     </div>
     <div id="calcTableContainer"></div>
+    <div class="small muted" style="margin-top:8px; color:#9ca3af;">
+      Note: TP, FP, TN, and FN are rounded to whole numbers for display. PPV and NPV are calculated from exact
+      (unrounded) values, so manual calculations from the displayed integers may differ slightly.
+    </div>
   </div>
 
   <script>
@@ -486,7 +490,7 @@
 
       let rows = [];
       try {
-        rows = await fetchTable('../../data/  device_level_tests.csv');
+        rows = await fetchTable('../../data/device_level_tests.csv');
       } catch (e) {
         const el = document.getElementById('error');
         el.style.display = 'block';
