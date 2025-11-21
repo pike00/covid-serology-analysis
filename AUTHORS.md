@@ -6,24 +6,19 @@ This project was developed by Team 124 for CSE 6242 (Data and Visual Analytics) 
 
 Listed alphabetically by last name:
 
-- **Rohit Bodhare** <rbodhare@gmail.com>
-
+- **Rohit Bodhare**
   - GitHub: [@rbodhare](https://github.com/rbodhare)
 
-- **Tianwei Ji** <64883401+JasonJi1010@users.noreply.github.com>
-
+- **Tianwei Ji**
   - GitHub: [@JasonJi1010](https://github.com/JasonJi1010)
 
-- **Ehsanul Khan** <32853432+ekhan128@users.noreply.github.com>
-
+- **Ehsanul Khan**
   - GitHub: [@ekhan128](https://github.com/ekhan128)
 
-- **Colin O'Laughlin** <83593000+colin-olaughlin@users.noreply.github.com>
-
+- **Colin O'Laughlin**
   - GitHub: [@colin-olaughlin](https://github.com/colin-olaughlin)
 
-- **Will Pike** <6687499+pike00@users.noreply.github.com>
-
+- **Will Pike**
   - GitHub: [@pike00](https://github.com/pike00)
 
 - **Justin Weng**
