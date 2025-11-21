@@ -1,0 +1,46 @@
+# Authors
+
+This project was developed by Team 124 for CSE 6242 (Data and Visual Analytics) at Georgia Institute of Technology Online Master of Science in Analytics (OMSA).
+
+## Contributors
+
+Listed alphabetically by last name:
+
+- **Rohit Bodhare** <rbodhare@gmail.com>
+
+  - GitHub: [@rbodhare](https://github.com/rbodhare)
+
+- **Tianwei Ji** <64883401+JasonJi1010@users.noreply.github.com>
+
+  - GitHub: [@JasonJi1010](https://github.com/JasonJi1010)
+
+- **Ehsanul Khan** <32853432+ekhan128@users.noreply.github.com>
+
+  - GitHub: [@ekhan128](https://github.com/ekhan128)
+
+- **Colin O'Laughlin** <83593000+colin-olaughlin@users.noreply.github.com>
+
+  - GitHub: [@colin-olaughlin](https://github.com/colin-olaughlin)
+
+- **Will Pike** <6687499+pike00@users.noreply.github.com>
+
+  - GitHub: [@pike00](https://github.com/pike00)
+
+- **Justin Weng**
+  - GitHub: [@justinweng319](https://github.com/justinweng319)
+
+## Project
+
+**Course:** CSE 6242 - Data and Visual Analytics
+**Team:** Team 124
+**Project:** COVID-19 Antibody Test Analysis and Visualization
+
+## Contributions
+
+This project represents collaborative work across data analysis, visualization development, and interactive dashboard creation. All team members contributed to various aspects of the project including:
+
+- Data collection and preprocessing
+- Exploratory data analysis
+- Interactive D3.js visualizations
+- Statistical modeling and clustering
+- Documentation and testing

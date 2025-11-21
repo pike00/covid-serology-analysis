@@ -1,6 +1,6 @@
-# CSE 6242 Team 124 - Course Project
+# COVID-19 Antibody Test Analysis and Visualization
 
-COVID-19 Antibody Test Analysis and Visualization
+[View Authors](AUTHORS)
 
 ## Project Overview
 
@@ -44,11 +44,13 @@ D3Visual/
 ### Running the Visualizations
 
 1. **Navigate to the project directory:**
+
    ```bash
    cd /path/to/cse6242-team124-courseproject
    ```
 
 2. **Start a local HTTP server:**
+
    ```bash
    python3 -m http.server 8000
    ```
@@ -63,17 +65,21 @@ D3Visual/
 ## Visualization Modules
 
 ### 0-EDA: Exploratory Data Analysis
+
 Initial exploration of antibody test metrics, including accuracy comparisons between different test types and antibody classes.
 
 ### 1-FDA: FDA Serology Data
+
 Interactive table of FDA-authorized COVID-19 antibody tests with performance metrics.
 
 ### 2-Prevalence: PPV/NPV Analysis
+
 Interactive tool for exploring how disease prevalence affects Positive Predictive Value (PPV) and Negative Predictive Value (NPV). Features adjustable sliders for sensitivity, specificity, and prevalence.
 
 See [2-Prevalence/README.md](D3Visual/2-Prevalence/README.md) for detailed setup instructions.
 
 ### 3-Clusters_Scatter: K-Means Clustering
+
 Visual analysis of test performance using scatterplots, K-means clustering (k=6), and elbow method charts for both IgG and IgM antibody tests.
 
 See [3-Clusters_Scatter/README.md](D3Visual/3-Clusters_Scatter/README.md) for detailed setup instructions.
@@ -84,13 +90,3 @@ See [3-Clusters_Scatter/README.md](D3Visual/3-Clusters_Scatter/README.md) for de
 - **Plotly** - Interactive charts
 - **Python HTTP Server** - Local development server
 - **CSV** - Data storage format
-
-## Team
-
-CSE 6242 - Team 124
-
-## Notes
-
-- All visualizations require a local HTTP server to function properly due to CORS restrictions
-- CSV data files must be in the same directory as their corresponding HTML files
-- For troubleshooting, refer to the README.md files in each visualization folder
