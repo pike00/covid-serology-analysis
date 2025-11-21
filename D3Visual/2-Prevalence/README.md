@@ -14,13 +14,15 @@ This folder contains an interactive D3.js + Plotly visualization for exploring t
 ### 1. Navigate to this folder
 
 **macOS Terminal:**
+
 ```bash
-cd "/Users/will/Desktop/cse6242-team124-courseproject/D3Visual/2-Prevalence"
+cd "cse6242-team124-courseproject/D3Visual/2-Prevalence"
 ```
 
 **Windows Command Prompt:**
+
 ```cmd
-cd "C:\path\to\cse6242-team124-courseproject\D3Visual\2-Prevalence"
+cd "cse6242-team124-courseproject\D3Visual\2-Prevalence"
 ```
 
 ### 2. Start a local HTTP server
@@ -30,6 +32,7 @@ python3 -m http.server 8000
 ```
 
 On Windows, you may need:
+
 ```cmd
 python -m http.server 8000
 ```
@@ -37,6 +40,7 @@ python -m http.server 8000
 ### 3. Open in your browser
 
 Navigate to:
+
 - Main visualization: http://localhost:8000/prevalence.html
 - With filters: http://localhost:8000/prevalence_FilterType.html
 - Index page: http://localhost:8000/index.html
@@ -44,6 +48,7 @@ Navigate to:
 ## Features
 
 The visualization includes:
+
 - Interactive sliders for sensitivity, specificity, and prevalence
 - Real-time PPV/NPV calculations and charts
 - Visual representation of test performance metrics
@@ -51,6 +56,7 @@ The visualization includes:
 ## Troubleshooting
 
 If visuals do not appear, verify:
+
 - All files are in the same directory as the HTML file
 - The local server is running on port 8000
 - The browser URL exactly matches the filename
