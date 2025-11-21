@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <title>Serology PPV/NPV Interactive (FDA Serology)</title>
@@ -8,37 +9,165 @@
   <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
   <style>
-    :root { --b:#e5e7eb; --muted:#6b7280; }
-    body { font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial; margin: 24px; }
-    h1 { font-size: 20px; margin: 0 0 8px; }
-    h2 { font-size: 16px; margin: 16px 0 8px; }
-    .grid { display: grid; grid-template-columns: 360px 1fr; gap: 20px; align-items: start; }
-    .panel { border: 1px solid var(--b); border-radius: 12px; padding: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
-    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; align-items: center; margin: 10px 0; }
-    .row3 { display: grid; grid-template-columns: 1fr 1fr 92px; gap: 8px; align-items: center; margin: 10px 0; }
-    .row label { font-size: 13px; }
-    .row3 label { font-size: 13px; }
-    .row input[type="range"], .row3 input[type="range"] { width: 100%; }
-    .small { color: var(--muted); font-size: 12px; }
-    .pill { display:inline-block; padding:2px 8px; border-radius:999px; background:#f3f4f6; font-size:12px; margin-left:6px; }
-    .two-col { display:grid; grid-template-columns: 1fr 1fr; gap:10px; }
-    .divider { height:1px; background:var(--b); margin:12px 0; }
-    button, select, input[type="number"] { padding: 8px 10px; border-radius: 8px; border: 1px solid var(--b); background: white; }
-    button { cursor: pointer; }
-    .muted { color: var(--muted); }
-    .stat { font-weight:600; }
-    .kbd { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Courier New", monospace; font-size:12px; }
-    .stack { display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
-    #error { color:#b91c1c; font-size:12px; margin-top:6px; display:none; }
-    .pct-input { text-align:right; }
+    :root {
+      --b: #e5e7eb;
+      --muted: #6b7280;
+    }
+
+    body {
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      margin: 24px;
+    }
+
+    h1 {
+      font-size: 20px;
+      margin: 0 0 8px;
+    }
+
+    h2 {
+      font-size: 16px;
+      margin: 16px 0 8px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 360px 1fr;
+      gap: 20px;
+      align-items: start;
+    }
+
+    .panel {
+      border: 1px solid var(--b);
+      border-radius: 12px;
+      padding: 16px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      align-items: center;
+      margin: 10px 0;
+    }
+
+    .row3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 92px;
+      gap: 8px;
+      align-items: center;
+      margin: 10px 0;
+    }
+
+    .row label {
+      font-size: 13px;
+    }
+
+    .row3 label {
+      font-size: 13px;
+    }
+
+    .row input[type="range"],
+    .row3 input[type="range"] {
+      width: 100%;
+    }
+
+    .small {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .pill {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: #f3f4f6;
+      font-size: 12px;
+      margin-left: 6px;
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .divider {
+      height: 1px;
+      background: var(--b);
+      margin: 12px 0;
+    }
+
+    button,
+    select,
+    input[type="number"] {
+      padding: 8px 10px;
+      border-radius: 8px;
+      border: 1px solid var(--b);
+      background: white;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    .muted {
+      color: var(--muted);
+    }
+
+    .stat {
+      font-weight: 600;
+    }
+
+    .kbd {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Courier New", monospace;
+      font-size: 12px;
+    }
+
+    .stack {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    #error {
+      color: #b91c1c;
+      font-size: 12px;
+      margin-top: 6px;
+      display: none;
+    }
+
+    .pct-input {
+      text-align: right;
+    }
 
     /* Table styles */
-    table { width:100%; border-collapse: collapse; font-size: 12px; }
-    th, td { border:1px solid var(--b); padding:4px 6px; text-align:left; vertical-align: top; }
-    th { background:#f9fafb; }
-    #calcTableContainer { overflow-x:auto; margin-top:8px; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+
+    th,
+    td {
+      border: 1px solid var(--b);
+      padding: 4px 6px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background: #f9fafb;
+    }
+
+    #calcTableContainer {
+      overflow-x: auto;
+      margin-top: 8px;
+    }
   </style>
 </head>
+
 <body>
   <h1>Serology PPV/NPV Interactive</h1>
   <div class="small">
@@ -54,7 +183,9 @@
 
       <div class="row">
         <label>Device (from FDA CSV)</label>
-        <select id="testSelect"><option value="">— Loading… —</option></select>
+        <select id="testSelect">
+          <option value="">— Loading… —</option>
+        </select>
       </div>
       <div id="deviceMeta" class="small muted"></div>
 
@@ -80,13 +211,16 @@
 
       <div class="row" style="grid-template-columns:auto 1fr;">
         <label class="stack"><input type="checkbox" id="twoTest"> <span>Two-test confirmatory strategy</span></label>
-        <div class="small muted">Assumes independence: sens<sub>c</sub> = s₁×s₂; spec<sub>c</sub> = 1 − (1−sp₁)(1−sp₂)</div>
+        <div class="small muted">Assumes independence: sens<sub>c</sub> = s₁×s₂; spec<sub>c</sub> = 1 − (1−sp₁)(1−sp₂)
+        </div>
       </div>
 
       <div id="twoTestInputs" style="display:none;">
         <div class="row">
           <label>2nd Device</label>
-          <select id="testSelect2"><option value="">— Optional —</option></select>
+          <select id="testSelect2">
+            <option value="">— Optional —</option>
+          </select>
         </div>
         <div class="row3">
           <label>2nd Sens. <span id="sens2Val" class="pill">—</span></label>
@@ -115,7 +249,8 @@
           <div>PPV: <span id="ppvNow" class="stat">—</span></div>
           <div>NPV: <span id="npvNow" class="stat">—</span></div>
         </div>
-        <div class="small muted" style="margin-top:8px;">Tip: Drag to zoom, double-click to reset. Press <span class="kbd">p</span> to save PNG.</div>
+        <div class="small muted" style="margin-top:8px;">Tip: Drag to zoom, double-click to reset. Press <span
+            class="kbd">p</span> to save PNG.</div>
       </div>
     </div>
 
@@ -129,336 +264,338 @@
   <div class="panel" style="margin-top:20px;">
     <h2>Calculated Table for Current Settings</h2>
     <div class="small muted">
-      Assumes a cohort of <strong>1,000</strong> people at the current prevalence. Values update as you move the sliders.
+      Assumes a cohort of <strong>1,000</strong> people at the current prevalence. Values update as you move the
+      sliders.
     </div>
     <div id="calcTableContainer"></div>
   </div>
 
-<script>
-window.onerror = function(msg){
-  const el = document.getElementById('error');
-  el.style.display = 'block';
-  el.textContent = 'Error: ' + msg;
-};
+  <script>
+    window.onerror = function (msg) {
+      const el = document.getElementById('error');
+      el.style.display = 'block';
+      el.textContent = 'Error: ' + msg;
+    };
 
-const by = sel => document.querySelector(sel);
-const fmtPct = x => (x*100).toFixed(1) + "%";
-const clamp = (x, a, b) => Math.min(Math.max(x, a), b);
-const ppv = (s, sp, p) => { const tp=s*p, fp=(1-sp)*(1-p); const d=tp+fp; return d>0? tp/d:0; };
-const npv = (s, sp, p) => { const tn=sp*(1-p), fn=(1-s)*p; const d=tn+fn; return d>0? tn/d:0; };
-const combineSens = (s1,s2)=> s1*s2;
-const combineSpec = (sp1,sp2)=> 1-(1-sp1)*(1-sp2);
+    const by = sel => document.querySelector(sel);
+    const fmtPct = x => (x * 100).toFixed(1) + "%";
+    const clamp = (x, a, b) => Math.min(Math.max(x, a), b);
+    const ppv = (s, sp, p) => { const tp = s * p, fp = (1 - sp) * (1 - p); const d = tp + fp; return d > 0 ? tp / d : 0; };
+    const npv = (s, sp, p) => { const tn = sp * (1 - p), fn = (1 - s) * p; const d = tn + fn; return d > 0 ? tn / d : 0; };
+    const combineSens = (s1, s2) => s1 * s2;
+    const combineSpec = (sp1, sp2) => 1 - (1 - sp1) * (1 - sp2);
 
-// For calculated table
-const POP_SIZE = 1000;
+    // For calculated table
+    const POP_SIZE = 1000;
 
-let DATA = [];
+    let DATA = [];
 
-const ui = {
-  testSelect: by('#testSelect'),
-  testSelect2: by('#testSelect2'),
-  sens: by('#sens'), spec: by('#spec'), prev: by('#prev'),
-  sensInput: by('#sensInput'), specInput: by('#specInput'), prevInput: by('#prevInput'),
-  sensVal: by('#sensVal'), specVal: by('#specVal'), prevVal: by('#prevVal'),
-  twoTest: by('#twoTest'), twoTestInputs: by('#twoTestInputs'),
-  sens2: by('#sens2'), spec2: by('#spec2'),
-  sens2Input: by('#sens2Input'), spec2Input: by('#spec2Input'),
-  sens2Val: by('#sens2Val'), spec2Val: by('#spec2Val'),
-  ppvNow: by('#ppvNow'), npvNow: by('#npvNow'), prevNow: by('#prevNow'),
-  chart: by('#chart'), reset: by('#reset'), reload: by('#reload'),
-  deviceMeta: by('#deviceMeta')
-};
+    const ui = {
+      testSelect: by('#testSelect'),
+      testSelect2: by('#testSelect2'),
+      sens: by('#sens'), spec: by('#spec'), prev: by('#prev'),
+      sensInput: by('#sensInput'), specInput: by('#specInput'), prevInput: by('#prevInput'),
+      sensVal: by('#sensVal'), specVal: by('#specVal'), prevVal: by('#prevVal'),
+      twoTest: by('#twoTest'), twoTestInputs: by('#twoTestInputs'),
+      sens2: by('#sens2'), spec2: by('#spec2'),
+      sens2Input: by('#sens2Input'), spec2Input: by('#spec2Input'),
+      sens2Val: by('#sens2Val'), spec2Val: by('#spec2Val'),
+      ppvNow: by('#ppvNow'), npvNow: by('#npvNow'), prevNow: by('#prevNow'),
+      chart: by('#chart'), reset: by('#reset'), reload: by('#reload'),
+      deviceMeta: by('#deviceMeta')
+    };
 
-/* ----- Helpers to sync slider <-> number inputs ----- */
-function setNumber(el, v){ el.value = (Math.round(v*10)/10).toString(); }
-function setSlider(el, v){ el.value = (Math.round(v*10)/10).toString(); }
-function parsePct(el){ const n = parseFloat(el.value); return isFinite(n) ? clamp(n, 0, 100) : 0; }
+    /* ----- Helpers to sync slider <-> number inputs ----- */
+    function setNumber(el, v) { el.value = (Math.round(v * 10) / 10).toString(); }
+    function setSlider(el, v) { el.value = (Math.round(v * 10) / 10).toString(); }
+    function parsePct(el) { const n = parseFloat(el.value); return isFinite(n) ? clamp(n, 0, 100) : 0; }
 
-function bindSliderNumber(slider, number, onChange){
-  // slider -> number
-  slider.addEventListener('input', () => {
-    setNumber(number, parseFloat(slider.value));
-    onChange();
-  });
-  // number -> slider (accepts typing)
-  number.addEventListener('input', () => {
-    const v = parsePct(number);
-    setSlider(slider, v);
-    onChange();
-  });
-}
-
-function buildSeries(s, sp, label, dash){
-  const xs=[], yPPV=[], yNPV=[];
-  for(let i=0;i<=100;i++){
-    const p=i/100;
-    xs.push(i);
-    yPPV.push(100*ppv(s,sp,p));
-    yNPV.push(100*npv(s,sp,p));
-  }
-  return [
-    {
-      x:xs,
-      y:yPPV,
-      mode:'lines',
-      name:`PPV ${label}`,
-      line:{dash:dash||'solid'},
-      hovertemplate: '%{y:.4g}%<extra></extra>'
-    },
-    {
-      x:xs,
-      y:yNPV,
-      mode:'lines',
-      name:`NPV ${label}`,
-      line:{dash:dash||'solid'},
-      hovertemplate: '%{y:.4g}%<extra></extra>'
+    function bindSliderNumber(slider, number, onChange) {
+      // slider -> number
+      slider.addEventListener('input', () => {
+        setNumber(number, parseFloat(slider.value));
+        onChange();
+      });
+      // number -> slider (accepts typing)
+      number.addEventListener('input', () => {
+        const v = parsePct(number);
+        setSlider(slider, v);
+        onChange();
+      });
     }
-  ];
-}
-function vline(x){ return {x:[x,x], y:[0,100], mode:'lines', showlegend:false, line:{dash:'dot'}, hoverinfo:'skip'}; }
 
-/* ---- Calculated table helpers ---- */
-function calcScenario(label, s, sp, p){
-  const N = POP_SIZE;
-  const pos = p * N;
-  const neg = (1 - p) * N;
+    function buildSeries(s, sp, label, dash) {
+      const xs = [], yPPV = [], yNPV = [];
+      for (let i = 0; i <= 100; i++) {
+        const p = i / 100;
+        xs.push(i);
+        yPPV.push(100 * ppv(s, sp, p));
+        yNPV.push(100 * npv(s, sp, p));
+      }
+      return [
+        {
+          x: xs,
+          y: yPPV,
+          mode: 'lines',
+          name: `PPV ${label}`,
+          line: { dash: dash || 'solid' },
+          hovertemplate: '%{y:.4g}%<extra></extra>'
+        },
+        {
+          x: xs,
+          y: yNPV,
+          mode: 'lines',
+          name: `NPV ${label}`,
+          line: { dash: dash || 'solid' },
+          hovertemplate: '%{y:.4g}%<extra></extra>'
+        }
+      ];
+    }
+    function vline(x) { return { x: [x, x], y: [0, 100], mode: 'lines', showlegend: false, line: { dash: 'dot' }, hoverinfo: 'skip' }; }
 
-  const TP = Math.round(s * pos);
-  const FN = Math.round((1 - s) * pos);
-  const TN = Math.round(sp * neg);
-  const FP = Math.round((1 - sp) * neg);
+    /* ---- Calculated table helpers ---- */
+    function calcScenario(label, s, sp, p) {
+      const N = POP_SIZE;
+      const pos = p * N;
+      const neg = (1 - p) * N;
 
-  const PPV = ppv(s, sp, p) * 100;
-  const NPV = npv(s, sp, p) * 100;
+      const TP = Math.round(s * pos);
+      const FN = Math.round((1 - s) * pos);
+      const TN = Math.round(sp * neg);
+      const FP = Math.round((1 - sp) * neg);
 
-  return {
-    label,
-    prevalence: (p * 100).toFixed(1) + "%",
-    sens: (s * 100).toFixed(1) + "%",
-    spec: (sp * 100).toFixed(1) + "%",
-    TP, FP, TN, FN,
-    PPV: PPV.toFixed(1) + "%",
-    NPV: NPV.toFixed(1) + "%"
-  };
-}
+      const PPV = ppv(s, sp, p) * 100;
+      const NPV = npv(s, sp, p) * 100;
 
-function renderCalcTable(rows){
-  const container = document.getElementById("calcTableContainer");
-  if (!container) return;
+      return {
+        label,
+        prevalence: (p * 100).toFixed(1) + "%",
+        sens: (s * 100).toFixed(1) + "%",
+        spec: (sp * 100).toFixed(1) + "%",
+        TP, FP, TN, FN,
+        PPV: PPV.toFixed(1) + "%",
+        NPV: NPV.toFixed(1) + "%"
+      };
+    }
 
-  if (!rows || !rows.length){
-    container.innerHTML = "<div class='small muted'>No scenario available. Adjust the sliders above.</div>";
-    return;
-  }
+    function renderCalcTable(rows) {
+      const container = document.getElementById("calcTableContainer");
+      if (!container) return;
 
-  let html = "<table><thead><tr>";
-  const cols = ["Scenario","Prevalence","Sensitivity","Specificity","True Positives","False Positives","True Negatives","False Negatives","PPV","NPV"];
-  cols.forEach(c => { html += `<th>${c}</th>`; });
-  html += "</tr></thead><tbody>";
+      if (!rows || !rows.length) {
+        container.innerHTML = "<div class='small muted'>No scenario available. Adjust the sliders above.</div>";
+        return;
+      }
 
-  rows.forEach(r => {
-    html += "<tr>";
-    html += `<td>${r.label}</td>`;
-    html += `<td>${r.prevalence}</td>`;
-    html += `<td>${r.sens}</td>`;
-    html += `<td>${r.spec}</td>`;
-    html += `<td>${r.TP}</td>`;
-    html += `<td>${r.FP}</td>`;
-    html += `<td>${r.TN}</td>`;
-    html += `<td>${r.FN}</td>`;
-    html += `<td>${r.PPV}</td>`;
-    html += `<td>${r.NPV}</td>`;
-    html += "</tr>";
-  });
+      let html = "<table><thead><tr>";
+      const cols = ["Scenario", "Prevalence", "Sensitivity", "Specificity", "True Positives", "False Positives", "True Negatives", "False Negatives", "PPV", "NPV"];
+      cols.forEach(c => { html += `<th>${c}</th>`; });
+      html += "</tr></thead><tbody>";
 
-  html += "</tbody></table>";
-  container.innerHTML = html;
-}
+      rows.forEach(r => {
+        html += "<tr>";
+        html += `<td>${r.label}</td>`;
+        html += `<td>${r.prevalence}</td>`;
+        html += `<td>${r.sens}</td>`;
+        html += `<td>${r.spec}</td>`;
+        html += `<td>${r.TP}</td>`;
+        html += `<td>${r.FP}</td>`;
+        html += `<td>${r.TN}</td>`;
+        html += `<td>${r.FN}</td>`;
+        html += `<td>${r.PPV}</td>`;
+        html += `<td>${r.NPV}</td>`;
+        html += "</tr>";
+      });
 
-function render(){
-  const s1 = clamp(parseFloat(ui.sens.value)/100, 0, 1);
-  const sp1 = clamp(parseFloat(ui.spec.value)/100, 0, 1);
-  const pNow = clamp(parseFloat(ui.prev.value)/100, 0, 1);
-  ui.sensVal.textContent = fmtPct(s1);
-  ui.specVal.textContent = fmtPct(sp1);
-  ui.prevVal.textContent = fmtPct(pNow);
+      html += "</tbody></table>";
+      container.innerHTML = html;
+    }
 
-  let series = buildSeries(s1, sp1, '(Device 1)', 'solid');
-  const calcRows = [];
+    function render() {
+      const s1 = clamp(parseFloat(ui.sens.value) / 100, 0, 1);
+      const sp1 = clamp(parseFloat(ui.spec.value) / 100, 0, 1);
+      const pNow = clamp(parseFloat(ui.prev.value) / 100, 0, 1);
+      ui.sensVal.textContent = fmtPct(s1);
+      ui.specVal.textContent = fmtPct(sp1);
+      ui.prevVal.textContent = fmtPct(pNow);
 
-  // Scenario for Device 1
-  calcRows.push(calcScenario("Test 1", s1, sp1, pNow));
+      let series = buildSeries(s1, sp1, '(Device 1)', 'solid');
+      const calcRows = [];
 
-  if (ui.twoTest.checked){
-    const s2 = clamp(parseFloat(ui.sens2.value)/100, 0, 1);
-    const sp2 = clamp(parseFloat(ui.spec2.value)/100, 0, 1);
-    ui.sens2Val.textContent = fmtPct(s2);
-    ui.spec2Val.textContent = fmtPct(sp2);
-    const sC = combineSens(s1, s2);
-    const spC = combineSpec(sp1, sp2);
-    series = series.concat(buildSeries(sC, spC, '(Combined)', 'dash'));
+      // Scenario for Device 1
+      calcRows.push(calcScenario("Test 1", s1, sp1, pNow));
 
-    // Scenario for Combined
-    calcRows.push(calcScenario("Combined (confirmatory)", sC, spC, pNow));
-  }
-  series.push(vline(parseFloat(ui.prev.value)));
+      if (ui.twoTest.checked) {
+        const s2 = clamp(parseFloat(ui.sens2.value) / 100, 0, 1);
+        const sp2 = clamp(parseFloat(ui.spec2.value) / 100, 0, 1);
+        ui.sens2Val.textContent = fmtPct(s2);
+        ui.spec2Val.textContent = fmtPct(sp2);
+        const sC = combineSens(s1, s2);
+        const spC = combineSpec(sp1, sp2);
+        series = series.concat(buildSeries(sC, spC, '(Combined)', 'dash'));
 
-  Plotly.newPlot(ui.chart, series, {
-    margin:{l:50,r:10,t:10,b:40},
-    xaxis:{title:'Prevalence (%)', range:[0,100]},
-    yaxis:{title:'Predictive Value (%)', range:[0,100]},
-    legend:{orientation:'h', x:0, y:1.12},
-    hovermode:'x unified'
-  }, {displaylogo:false, responsive:true});
+        // Scenario for Combined
+        calcRows.push(calcScenario("Combined (confirmatory)", sC, spC, pNow));
+      }
+      series.push(vline(parseFloat(ui.prev.value)));
 
-  ui.ppvNow.textContent = fmtPct(ppv(s1, sp1, pNow));
-  ui.npvNow.textContent = fmtPct(npv(s1, sp1, pNow));
-  ui.prevNow.textContent = (pNow*100).toFixed(1) + "%";
+      Plotly.newPlot(ui.chart, series, {
+        margin: { l: 50, r: 10, t: 10, b: 40 },
+        xaxis: { title: 'Prevalence (%)', range: [0, 100] },
+        yaxis: { title: 'Predictive Value (%)', range: [0, 100] },
+        legend: { orientation: 'h', x: 0, y: 1.12 },
+        hovermode: 'x unified'
+      }, { displaylogo: false, responsive: true });
 
-  // Update calculated table
-  renderCalcTable(calcRows);
-}
+      ui.ppvNow.textContent = fmtPct(ppv(s1, sp1, pNow));
+      ui.npvNow.textContent = fmtPct(npv(s1, sp1, pNow));
+      ui.prevNow.textContent = (pNow * 100).toFixed(1) + "%";
 
-/* ---- Device metadata display ---- */
-function setDeviceMeta(deviceObj){
-  if (!deviceObj){
-    ui.deviceMeta.textContent = "";
-    return;
-  }
-  const parts = [];
-  if (deviceObj.manufacturer) parts.push(deviceObj.manufacturer);
-  if (deviceObj.device) parts.push(deviceObj.device);
-  if (deviceObj.n_sens != null) parts.push(`n(sens)=${deviceObj.n_sens}`);
-  if (deviceObj.n_spec != null) parts.push(`n(spec)=${deviceObj.n_spec}`);
-  if (deviceObj.cluster != null && deviceObj.cluster !== "") parts.push(`cluster=${deviceObj.cluster}`);
-  ui.deviceMeta.textContent = parts.join(" • ");
-}
+      // Update calculated table
+      renderCalcTable(calcRows);
+    }
 
-/* -------- CSV loader for FDA device-level table -------- */
-async function loadCSV(){
-  async function fetchTable(path){
-    const res = await fetch(path);
-    if (!res.ok) throw new Error(`HTTP ${res.status} for ${path}`);
-    const text = await res.text();
-    // file is CSV, but this detects tab vs comma just in case
-    const first = text.split(/\r?\n/)[0] || '';
-    const tabs = (first.match(/\t/g) || []).length;
-    const commas = (first.match(/,/g) || []).length;
-    const parse = tabs > commas ? d3.tsvParse : d3.csvParse;
-    return parse(text);
-  }
+    /* ---- Device metadata display ---- */
+    function setDeviceMeta(deviceObj) {
+      if (!deviceObj) {
+        ui.deviceMeta.textContent = "";
+        return;
+      }
+      const parts = [];
+      if (deviceObj.manufacturer) parts.push(deviceObj.manufacturer);
+      if (deviceObj.device) parts.push(deviceObj.device);
+      if (deviceObj.n_sens != null) parts.push(`n(sens)=${deviceObj.n_sens}`);
+      if (deviceObj.n_spec != null) parts.push(`n(spec)=${deviceObj.n_spec}`);
+      if (deviceObj.cluster != null && deviceObj.cluster !== "") parts.push(`cluster=${deviceObj.cluster}`);
+      ui.deviceMeta.textContent = parts.join(" • ");
+    }
 
-  let rows = [];
-  try {
-    rows = await fetchTable('device_level_tests.csv');
-  } catch (e) {
-    const el = document.getElementById('error');
-    el.style.display='block';
-    el.textContent='Could not load device_level_tests.csv.';
-    rows = [];
-  }
+    /* -------- CSV loader for FDA device-level table -------- */
+    async function loadCSV() {
+      async function fetchTable(path) {
+        const res = await fetch(path);
+        if (!res.ok) throw new Error(`HTTP ${res.status} for ${path}`);
+        const text = await res.text();
+        // file is CSV, but this detects tab vs comma just in case
+        const first = text.split(/\r?\n/)[0] || '';
+        const tabs = (first.match(/\t/g) || []).length;
+        const commas = (first.match(/,/g) || []).length;
+        const parse = tabs > commas ? d3.tsvParse : d3.csvParse;
+        return parse(text);
+      }
 
-  DATA = [];
-  for (const r of rows){
-    const sens = parseFloat(r.sensitivity);
-    const spec = parseFloat(r.specificity);
-    if (!isFinite(sens) || !isFinite(spec)) continue;
+      let rows = [];
+      try {
+        rows = await fetchTable('../../data/  device_level_tests.csv');
+      } catch (e) {
+        const el = document.getElementById('error');
+        el.style.display = 'block';
+        el.textContent = 'Could not load device_level_tests.csv.';
+        rows = [];
+      }
 
-    const sensPct = sens * 100;   // convert 0–1 to %
-    const specPct = spec * 100;
+      DATA = [];
+      for (const r of rows) {
+        const sens = parseFloat(r.sensitivity);
+        const spec = parseFloat(r.specificity);
+        if (!isFinite(sens) || !isFinite(spec)) continue;
 
-    DATA.push({
-      test_id: String(r.device || '').toLowerCase().replace(/[^a-z0-9]+/g,'_').slice(0,64),
-      manufacturer: r.manufacturer || '',
-      device: r.device || '',
-      n_sens: r.n_sensitivity != null ? Number(r.n_sensitivity) : null,
-      n_spec: r.n_specificity != null ? Number(r.n_specificity) : null,
-      cluster: r.cluster != null ? r.cluster : '',
-      sensitivity: sensPct.toFixed(1),
-      specificity: specPct.toFixed(1)
+        const sensPct = sens * 100;   // convert 0–1 to %
+        const specPct = spec * 100;
+
+        DATA.push({
+          test_id: String(r.device || '').toLowerCase().replace(/[^a-z0-9]+/g, '_').slice(0, 64),
+          manufacturer: r.manufacturer || '',
+          device: r.device || '',
+          n_sens: r.n_sensitivity != null ? Number(r.n_sensitivity) : null,
+          n_spec: r.n_specificity != null ? Number(r.n_specificity) : null,
+          cluster: r.cluster != null ? r.cluster : '',
+          sensitivity: sensPct.toFixed(1),
+          specificity: specPct.toFixed(1)
+        });
+      }
+
+      ui.testSelect.innerHTML = '<option value="">— Select a device —</option>';
+      ui.testSelect2.innerHTML = '<option value="">— Optional —</option>';
+
+      if (!DATA.length) {
+        ui.testSelect.innerHTML = '<option value="">— No devices found —</option>';
+        const el = document.getElementById('error');
+        el.style.display = 'block';
+        el.textContent = 'No usable rows. Ensure the CSV has columns: manufacturer, device, sensitivity, specificity.';
+        render();
+        return;
+      }
+
+      DATA.forEach((t, i) => {
+        const label = `${t.device} (${t.manufacturer}) [sens ${t.sensitivity} / spec ${t.specificity}]`;
+        const o = document.createElement('option'); o.value = i; o.textContent = label; ui.testSelect.appendChild(o);
+        const o2 = document.createElement('option'); o2.value = i; o2.textContent = label; ui.testSelect2.appendChild(o2);
+      });
+
+      // Initialize with first device from CSV
+      const first = DATA[0];
+      setSlider(ui.sens, first.sensitivity); setNumber(ui.sensInput, first.sensitivity);
+      setSlider(ui.spec, first.specificity); setNumber(ui.specInput, first.specificity);
+      setDeviceMeta(first);
+      render();
+    }
+
+    /* ----- Wiring: sliders <-> number inputs + other controls ----- */
+    bindSliderNumber(ui.sens, ui.sensInput, render);
+    bindSliderNumber(ui.spec, ui.specInput, render);
+    bindSliderNumber(ui.prev, ui.prevInput, render);
+    bindSliderNumber(ui.sens2, ui.sens2Input, render);
+    bindSliderNumber(ui.spec2, ui.spec2Input, render);
+
+    ui.twoTest.addEventListener('change', () => {
+      ui.twoTestInputs.style.display = ui.twoTest.checked ? 'block' : 'none';
+      render();
     });
-  }
 
-  ui.testSelect.innerHTML='<option value="">— Select a device —</option>';
-  ui.testSelect2.innerHTML='<option value="">— Optional —</option>';
+    ui.reset.addEventListener('click', () => {
+      const defaults = { sens: 98, spec: 99.6, prev: 10, sens2: 98, spec2: 99.6 };
+      setSlider(ui.sens, defaults.sens); setNumber(ui.sensInput, defaults.sens);
+      setSlider(ui.spec, defaults.spec); setNumber(ui.specInput, defaults.spec);
+      setSlider(ui.prev, defaults.prev); setNumber(ui.prevInput, defaults.prev);
+      setSlider(ui.sens2, defaults.sens2); setNumber(ui.sens2Input, defaults.sens2);
+      setSlider(ui.spec2, defaults.spec2); setNumber(ui.spec2Input, defaults.spec2);
+      ui.twoTest.checked = false;
+      ui.twoTestInputs.style.display = 'none';
+      ui.testSelect.value = "";
+      ui.testSelect2.value = "";
+      setDeviceMeta(null);
+      render();
+    });
 
-  if(!DATA.length){
-    ui.testSelect.innerHTML='<option value="">— No devices found —</option>';
-    const el=document.getElementById('error');
-    el.style.display='block';
-    el.textContent='No usable rows. Ensure the CSV has columns: manufacturer, device, sensitivity, specificity.';
-    render(); 
-    return;
-  }
+    ui.testSelect.addEventListener('change', () => {
+      if (ui.testSelect.value === "") {
+        setDeviceMeta(null);
+        render();
+        return;
+      }
+      const t = DATA[parseInt(ui.testSelect.value, 10)];
+      setSlider(ui.sens, t.sensitivity); setNumber(ui.sensInput, t.sensitivity);
+      setSlider(ui.spec, t.specificity); setNumber(ui.specInput, t.specificity);
+      setDeviceMeta(t);
+      render();
+    });
 
-  DATA.forEach((t,i)=>{
-    const label = `${t.device} (${t.manufacturer}) [sens ${t.sensitivity} / spec ${t.specificity}]`;
-    const o=document.createElement('option'); o.value=i; o.textContent=label; ui.testSelect.appendChild(o);
-    const o2=document.createElement('option'); o2.value=i; o2.textContent=label; ui.testSelect2.appendChild(o2);
-  });
+    ui.testSelect2.addEventListener('change', () => {
+      if (ui.testSelect2.value === "") return;
+      const t = DATA[parseInt(ui.testSelect2.value, 10)];
+      setSlider(ui.sens2, t.sensitivity); setNumber(ui.sens2Input, t.sensitivity);
+      setSlider(ui.spec2, t.specificity); setNumber(ui.spec2Input, t.specificity);
+      render();
+    });
 
-  // Initialize with first device from CSV
-  const first = DATA[0];
-  setSlider(ui.sens, first.sensitivity); setNumber(ui.sensInput, first.sensitivity);
-  setSlider(ui.spec, first.specificity); setNumber(ui.specInput, first.specificity);
-  setDeviceMeta(first);
-  render();
-}
+    ui.reload.addEventListener('click', () => {
+      loadCSV();
+    });
 
-/* ----- Wiring: sliders <-> number inputs + other controls ----- */
-bindSliderNumber(ui.sens, ui.sensInput, render);
-bindSliderNumber(ui.spec, ui.specInput, render);
-bindSliderNumber(ui.prev, ui.prevInput, render);
-bindSliderNumber(ui.sens2, ui.sens2Input, render);
-bindSliderNumber(ui.spec2, ui.spec2Input, render);
-
-ui.twoTest.addEventListener('change',()=>{
-  ui.twoTestInputs.style.display = ui.twoTest.checked ? 'block' : 'none';
-  render();
-});
-
-ui.reset.addEventListener('click',()=>{
-  const defaults = { sens:98, spec:99.6, prev:10, sens2:98, spec2:99.6 };
-  setSlider(ui.sens, defaults.sens); setNumber(ui.sensInput, defaults.sens);
-  setSlider(ui.spec, defaults.spec); setNumber(ui.specInput, defaults.spec);
-  setSlider(ui.prev, defaults.prev); setNumber(ui.prevInput, defaults.prev);
-  setSlider(ui.sens2, defaults.sens2); setNumber(ui.sens2Input, defaults.sens2);
-  setSlider(ui.spec2, defaults.spec2); setNumber(ui.spec2Input, defaults.spec2);
-  ui.twoTest.checked=false;
-  ui.twoTestInputs.style.display='none';
-  ui.testSelect.value="";
-  ui.testSelect2.value="";
-  setDeviceMeta(null);
-  render();
-});
-
-ui.testSelect.addEventListener('change',()=>{
-  if(ui.testSelect.value==="") {
-    setDeviceMeta(null);
-    render();
-    return;
-  }
-  const t = DATA[parseInt(ui.testSelect.value,10)];
-  setSlider(ui.sens, t.sensitivity); setNumber(ui.sensInput, t.sensitivity);
-  setSlider(ui.spec, t.specificity); setNumber(ui.specInput, t.specificity);
-  setDeviceMeta(t);
-  render();
-});
-
-ui.testSelect2.addEventListener('change',()=>{
-  if(ui.testSelect2.value==="") return;
-  const t = DATA[parseInt(ui.testSelect2.value,10)];
-  setSlider(ui.sens2, t.sensitivity); setNumber(ui.sens2Input, t.sensitivity);
-  setSlider(ui.spec2, t.specificity); setNumber(ui.spec2Input, t.specificity);
-  render();
-});
-
-ui.reload.addEventListener('click', ()=>{
-  loadCSV();
-});
-
-// Initial load
-loadCSV();
-</script>
+    // Initial load
+    loadCSV();
+  </script>
 </body>
+
 </html>
