@@ -274,6 +274,80 @@
     </div>
   </div>
 
+  <!-- Counterintuitive Scenarios -->
+  <div class="panel" style="margin-top:20px;">
+    <h2>Counterintuitive Scenarios</h2>
+    <div class="small muted" style="margin-bottom: 12px;">
+      These presets demonstrate surprising and counterintuitive PPV/NPV behaviors. Click a button to load the scenario,
+      then follow the instructions:
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 12px;">
+
+      <button id="scenario1" class="scenario-btn"
+        style="text-align: left; font-size: 12px; padding: 12px 14px; line-height: 1.5;">
+        <strong style="font-size: 14px;">1. Low Prevalence: Small Specificity Drop Crushes PPV</strong><br>
+        <span class="small muted">
+          <strong>Setup:</strong> Advaite RapCov test (Sn=86.7%, Sp=98.8%) at 10% prevalence with PPV=88.9%, NPV=98.5%.<br>
+          <strong>Try this:</strong> Move the <strong>Specificity slider</strong> down from 98.8% to 93.8% and watch PPV
+          collapse from 88.9% to 60.8%—a 28% drop from just 5% less specificity!
+          NPV stays relatively stable (98.5% to 98.4%). Then <strong>drag the Specificity slider</strong> back up to see the dramatic recovery at low
+          prevalence.
+        </span>
+      </button>
+
+      <button id="scenario2" class="scenario-btn"
+        style="text-align: left; font-size: 12px; padding: 12px 14px; line-height: 1.5;">
+        <strong style="font-size: 14px;">2. Mid Prevalence: Changes Have Minimal Effect</strong><br>
+        <span class="small muted">
+          <strong>Setup:</strong> AutoBio test at 50% prevalence (Sn=93.3%, Sp=98.8%, PPV=98.7%, NPV=93.6%).<br>
+          <strong>Try this:</strong> Move the <strong>Sensitivity slider</strong> down 5% to 88.3%—NPV barely changes
+          from 93.6% to 89.4% (only 4.2% drop).
+          Now move the <strong>Specificity slider</strong> down 5% to 93.8%—PPV only drops from 98.7% to 93.3% (5.4%
+          drop).
+          At mid-prevalence, the system is stable and test quality matters less!
+        </span>
+      </button>
+
+      <button id="scenario3a" class="scenario-btn"
+        style="text-align: left; font-size: 12px; padding: 12px 14px; line-height: 1.5;">
+        <strong style="font-size: 14px;">3a. Extreme Low Prevalence: Great Test, Terrible PPV</strong><br>
+        <span class="small muted">
+          <strong>Setup:</strong> H-Guard test with excellent metrics (Sn=96.7%, Sp=93.8%) at just 5% prevalence.<br>
+          <strong>Try this:</strong> Check the PPV—it's only 45.1%! A positive test is wrong more often than right.
+          Now <strong>drag the Prevalence slider</strong> from 5% up to 20% and watch PPV improve dramatically to 79.6%.
+          This shows why screening rare diseases with even good tests produces many false positives.
+        </span>
+      </button>
+
+      <button id="scenario3b" class="scenario-btn"
+        style="text-align: left; font-size: 12px; padding: 12px 14px; line-height: 1.5;">
+        <strong style="font-size: 14px;">3b. Extreme High Prevalence: Great Test, Terrible NPV</strong><br>
+        <span class="small muted">
+          <strong>Setup:</strong> Same H-Guard test (Sn=96.7%, Sp=93.8%) at 95% prevalence.<br>
+          <strong>Try this:</strong> Check the NPV—only 59.9%! Two in five negative tests are wrong.
+          Now <strong>drag the Prevalence slider</strong> down from 95% to 80% and watch NPV improve to 87.7%.
+          At high prevalence, even excellent tests struggle to rule out disease because nearly everyone has it.
+        </span>
+      </button>
+
+      <button id="scenario4" class="scenario-btn"
+        style="text-align: left; font-size: 12px; padding: 12px 14px; line-height: 1.5;">
+        <strong style="font-size: 14px;">4. Confirmatory Testing: Worse Test Improves PPV</strong><br>
+        <span class="small muted">
+          <strong>Setup:</strong> Phamatech test (Sn=86.7%, Sp=93.8%) with Polystat confirmatory test (Sn=76.7%,
+          Sp=91.3%—both worse!) at 10% prevalence.<br>
+          <strong>Try this:</strong> Notice combined PPV jumped to 93.2% vs 60.8% for the first test alone—a 32.4%
+          improvement!
+          NPV drops only slightly from 98.4% to 96.4% (just 2%).
+          Now <strong>uncheck the "Two-test confirmatory" box</strong> to see the single test performance, then
+          <strong>re-check it</strong> to see how requiring both tests to be positive filters out false positives,
+          despite lower individual test quality.
+        </span>
+      </button>
+
+    </div>
+  </div>
+
   <script>
     window.onerror = function (msg) {
       const el = document.getElementById('error');
@@ -595,6 +669,76 @@
 
     ui.reload.addEventListener('click', () => {
       loadCSV();
+    });
+
+    /* ----- Scenario shortcuts ----- */
+    function findDeviceByName(deviceName) {
+      return DATA.findIndex(d => d.device && d.device.toLowerCase().includes(deviceName.toLowerCase()));
+    }
+
+    function setScenario(sensVal, specVal, prevVal, twoTestEnabled = false, sens2Val = null, spec2Val = null) {
+      setSlider(ui.sens, sensVal); setNumber(ui.sensInput, sensVal);
+      setSlider(ui.spec, specVal); setNumber(ui.specInput, specVal);
+      setSlider(ui.prev, prevVal); setNumber(ui.prevInput, prevVal);
+
+      if (twoTestEnabled && sens2Val !== null && spec2Val !== null) {
+        ui.twoTest.checked = true;
+        ui.twoTestInputs.style.display = 'block';
+        setSlider(ui.sens2, sens2Val); setNumber(ui.sens2Input, sens2Val);
+        setSlider(ui.spec2, spec2Val); setNumber(ui.spec2Input, spec2Val);
+      } else {
+        ui.twoTest.checked = false;
+        ui.twoTestInputs.style.display = 'none';
+      }
+
+      render();
+    }
+
+    // Scenario 1: Low prevalence - specificity dramatically affects PPV
+    // Advaite RapCov test at 10% prevalence, Sn=86.7%, Sp=98.8%
+    document.getElementById('scenario1').addEventListener('click', () => {
+      const idx = findDeviceByName('Advaite RapCov');
+      if (idx >= 0) ui.testSelect.value = idx;
+      setScenario(86.7, 98.8, 10); // Start with higher specificity
+      setDeviceMeta(idx >= 0 ? DATA[idx] : null);
+    });
+
+    // Scenario 2: Intermediate prevalence - changes have minimal effect
+    // AutoBio Anti-SARS-CoV-2 test at 50% prevalence
+    document.getElementById('scenario2').addEventListener('click', () => {
+      const idx = findDeviceByName('Anti-SARS-CoV-2 Rapid Test');
+      if (idx >= 0) ui.testSelect.value = idx;
+      setScenario(93.3, 98.8, 50);
+      setDeviceMeta(idx >= 0 ? DATA[idx] : null);
+    });
+
+    // Scenario 3a: Extreme low prevalence - even great tests have poor PPV
+    // H-Guard test at 5% prevalence
+    document.getElementById('scenario3a').addEventListener('click', () => {
+      const idx = findDeviceByName('Novel Coronavirus COVID-19 IgM/IgG Test Kit');
+      if (idx >= 0) ui.testSelect.value = idx;
+      setScenario(96.7, 93.8, 5);
+      setDeviceMeta(idx >= 0 ? DATA[idx] : null);
+    });
+
+    // Scenario 3b: Extreme high prevalence - even great tests have poor NPV
+    // H-Guard test at 95% prevalence
+    document.getElementById('scenario3b').addEventListener('click', () => {
+      const idx = findDeviceByName('Novel Coronavirus COVID-19 IgM/IgG Test Kit');
+      if (idx >= 0) ui.testSelect.value = idx;
+      setScenario(96.7, 93.8, 95);
+      setDeviceMeta(idx >= 0 ? DATA[idx] : null);
+    });
+
+    // Scenario 4: Confirmatory test - worse test can improve PPV
+    // Phamatech + Polystat at 10% prevalence
+    document.getElementById('scenario4').addEventListener('click', () => {
+      const idx1 = findDeviceByName('COVID19 RAPID TEST');
+      const idx2 = findDeviceByName('Polystat SARS-CoV-2');
+      if (idx1 >= 0) ui.testSelect.value = idx1;
+      if (idx2 >= 0) ui.testSelect2.value = idx2;
+      setScenario(86.7, 93.8, 10, true, 76.7, 91.3);
+      setDeviceMeta(idx1 >= 0 ? DATA[idx1] : null);
     });
 
     // Initial load
