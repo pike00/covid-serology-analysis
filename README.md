@@ -1,6 +1,6 @@
 # COVID-19 Antibody Test Analysis and Visualization
 
-[View Authors](AUTHORS.md)
+[View Authors](AUTHORS.md). This repository is available on [Github](https://github.com/pike00/covid-serology-analysis).
 
 ## Description
 
