@@ -2,127 +2,40 @@
 <html lang="en">
 <head>
   <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Exploratory Data Analysis - COVID-19 Serology</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://d3js.org/d3.v7.min.js"></script>
-  <script src="https://d3js.org/d3-fetch.v3.min.js"></script>
+  <title>D3 EDA (CDN) — student vibe detailed comments</title>
   <style>
+    body { font-family:-apple-system, Segoe UI, Roboto, sans-serif; margin:18px; }
+    h1 { margin-bottom:6px; }
+    h2 { margin:26px 0 8px; }
+    .chart { margin-bottom:24px; }
     .axis text { font-size:11px; }
     .axis path, .axis line { stroke:#999; shape-rendering:crispEdges; }
     .legend { font-size:12px; }
-    .tooltip { position:absolute; pointer-events:none; background:rgba(0,0,0,.85); color:#fff; padding:8px 12px; border-radius:6px; font-size:13px; white-space:nowrap; transform:translate(-50%,-120%); opacity:0; box-shadow: 0 4px 6px rgba(0,0,0,0.1); z-index:1000; }
-    .chart-container { background: white; border-radius: 0.5rem; padding: 1.5rem; margin-bottom: 1.5rem; box-shadow: 0 1px 3px 0 rgba(0,0,0,0.1); }
+    .tooltip { position:absolute; pointer-events:none; background:rgba(0,0,0,.8); color:#fff; padding:6px 8px; border-radius:4px; font-size:12px; white-space:nowrap; transform:translate(-50%,-120%); opacity:0; }
+    .msg { color:#b00; font-size:13px; }
   </style>
 </head>
-<body class="bg-gray-50 min-h-screen">
-  <div class="container mx-auto px-4 py-8">
-    <!-- Back Button -->
-    <div class="mb-6">
-      <a href="../index.html"
-         class="inline-flex items-center text-blue-600 hover:text-blue-800 font-semibold transition-colors">
-        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-        </svg>
-        Back to D3 Visualizations
-      </a>
-    </div>
+<body>
+  <h1>Exploratory Data Analysis (D3)</h1>
 
-    <!-- Header -->
-    <div class="bg-white rounded-lg shadow-lg p-8 mb-8">
-      <h1 class="text-4xl font-bold text-gray-800 mb-4">Exploratory Data Analysis</h1>
-      <p class="text-lg text-gray-600 mb-6">
-        Interactive visualizations exploring COVID-19 serological test data. Use the filters below to dynamically update all charts and focus on specific subsets of the data.
-      </p>
-
-      <!-- Filters -->
-      <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
-        <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
-          <svg class="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
-          </svg>
-          Data Filters
-        </h3>
-        <div id="filters" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-4">
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Panel</label>
-            <select id="panelFilter" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"></select>
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">IgG Agreement</label>
-            <select id="iggFilter" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"></select>
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Sample Contains</label>
-            <input id="sampleFilter" placeholder="e.g. S-001" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Date From</label>
-            <input type="date" id="dateMin" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Date To</label>
-            <input type="date" id="dateMax" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
-          </div>
-        </div>
-        <div class="flex gap-3">
-          <button id="applyBtn" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors font-medium">Apply Filters</button>
-          <button id="resetBtn" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition-colors font-medium">Reset</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Chart 1: Tests Over Time -->
-    <div class="chart-container">
-      <div class="mb-4">
-        <h2 class="text-2xl font-bold text-gray-800 mb-2">Tests Over Time</h2>
-        <p class="text-gray-600">Monthly distribution of COVID-19 serological tests performed. This bar chart shows testing volume trends across the entire study period, helping identify periods of high and low testing activity.</p>
-      </div>
-      <div id="chart1" class="chart"></div>
-    </div>
-
-    <!-- Chart 2: Tests by Panel -->
-    <div class="chart-container">
-      <div class="mb-4">
-        <h2 class="text-2xl font-bold text-gray-800 mb-2">Test Volume by Panel</h2>
-        <p class="text-gray-600">Stacked bar chart showing the composition of test panels over time. Each color represents a different test panel, revealing how testing strategies evolved and which panel types dominated during different periods.</p>
-      </div>
-      <div id="chart2" class="chart"></div>
-    </div>
-
-    <!-- Chart 3: Days from Symptom Onset -->
-    <div class="chart-container">
-      <div class="mb-4">
-        <h2 class="text-2xl font-bold text-gray-800 mb-2">Days from Symptom Onset Distribution</h2>
-        <p class="text-gray-600">Histogram displaying the distribution of time elapsed between symptom onset and blood sample collection. This visualization helps understand typical testing delays and the temporal relationship between symptoms and testing.</p>
-      </div>
-      <div id="chart3" class="chart"></div>
-    </div>
-
-    <!-- Chart 4: IgG Agreement Over Time -->
-    <div class="chart-container">
-      <div class="mb-4">
-        <h2 class="text-2xl font-bold text-gray-800 mb-2">IgG Test Agreement Proportions</h2>
-        <p class="text-gray-600">100% stacked area chart showing the proportion of IgG test results categorized as True Positive, True Negative, False Positive, and False Negative over time. This normalized view reveals changes in test accuracy composition rather than absolute volumes.</p>
-      </div>
-      <div id="chart4" class="chart"></div>
-    </div>
-
-    <!-- Chart 5: Sample Accuracy -->
-    <div class="chart-container">
-      <div class="mb-4">
-        <h2 class="text-2xl font-bold text-gray-800 mb-2">Test Accuracy by Sample</h2>
-        <p class="text-gray-600">Bar chart displaying the percentage of correct results for each sample, sorted from lowest to highest accuracy. Each bar represents a unique sample, with hover details showing exact accuracy percentages. This helps identify problematic samples or patterns in test performance.</p>
-      </div>
-      <div id="chart5" class="chart" style="overflow-x:auto;"></div>
-    </div>
-
-    <!-- Footer Info -->
-    <div class="bg-white rounded-lg shadow p-6 mt-8 text-center text-gray-600">
-      <p class="mb-2">All charts update dynamically based on your filter selections above.</p>
-      <p class="text-sm">Hover over chart elements for detailed information.</p>
-    </div>
+  <div id="filters" style="display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin:8px 0 18px;">
+    <label>Panel: <select id="panelFilter"></select></label>
+    <label>IgG: <select id="iggFilter"></select></label>
+    <label>Sample contains: <input id="sampleFilter" placeholder="e.g. S-001" style="padding:4px 6px; width:140px;"></label>
+    <label>From: <input type="date" id="dateMin" /></label>
+    <label>To: <input type="date" id="dateMax" /></label>
+    <button id="applyBtn">Apply</button>
+    <button id="resetBtn">Reset</button>
   </div>
+
+  <h2>1) Tests over time (by month)</h2><div id="chart1" class="chart"></div>
+  <h2>2) Tests over time by <code>panel</code> (stacked)</h2><div id="chart2" class="chart"></div>
+  <h2>3) Days from symptom onset</h2><div id="chart3" class="chart"></div>
+  <h2>4) IgG agreement over time (100% stacked)</h2><div id="chart4" class="chart"></div>
+  <h2>5) % Correct by <code>sample_id</code> (True* vs others)</h2><div id="chart5" class="chart"></div>
+
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <script src="https://d3js.org/d3-fetch.v3.min.js"></script>
 
   <script>
   // basic setup for a class assignment. loading data, /parsing dates, define colors, making helpers, etc.
