@@ -36,12 +36,18 @@ D3Visual/
 
 ## Quick Start
 
+### Requirements
+
+- [uv](https://docs.astral.sh/uv/) needs to be installed
+
+### Command to Run
+
 ```bash
 # **Navigate to the project directory:**
 cd /path/to/cse6242-team124-courseproject
 
 # **Start a local HTTP server:**
-python3 -m http.server 8000
+uvx python -m http.server 8000
 ```
 
 ## Visualization Modules
