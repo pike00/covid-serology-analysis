@@ -1,6 +1,6 @@
 # COVID-19 Antibody Test Analysis and Visualization
 
-[View Authors](AUTHORS)
+[View Authors](AUTHORS.md)
 
 ## Project Overview
 
