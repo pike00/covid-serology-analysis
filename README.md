@@ -2,9 +2,13 @@
 
 [View Authors](AUTHORS.md)
 
-## Project Overview
+## Description
 
-This project provides interactive D3.js visualizations for analyzing COVID-19 antibody test performance metrics, including exploratory data analysis, FDA test comparisons, prevalence modeling, clustering analysis, and a manufacturer based analysis.
+This project analyzes COVID-19 serology test performance using FDA data from 116 devices tested over 27 months (April 2020-July 2022). The work addresses critical gaps in diagnostic test interpretation by clustering devices into performance tiers, building predictive models to identify accuracy drivers, and creating interactive calculators that show how test reliability varies with disease prevalence. The key finding—that test utility is highly context-dependent, with devices performing well at high prevalence becoming unreliable at low prevalence—has important implications for testing policy. The project provides practical tools for clinicians (point-of-care interpretation), policymakers (evidence for authorization decisions), and patients (better understanding of test accuracy), while demonstrating how visualization and machine learning can enhance diagnostic test evaluation broadly.
+
+Serology tests detect antibodies produced in response to infections like COVID-19 and are essential tools for informed healthcare decisions with public health implications. Using FDA's "COVID-19 Serological Testing Evaluations" dataset (13,420 rows representing results from 237 samples across 116 devices), we analyze test performance across manufacturers, antibody types (IgA, IgG, IgM), and time periods. Each result is compared against COVID-19 antibody truth status determined by ELISA. Reported accuracy varies widely and lacks critical context due to inconsistent data reporting. We evaluate reliability through four key metrics: sensitivity (correctly identifying those with antibodies), specificity (avoiding false positives in those without antibodies), positive predictive value (probability of true infection given a positive result), and negative predictive value (probability of no infection given a negative result). Current FDA presentation in flat, tabular format is difficult to interpret and lacks consideration for trends or relationships among variables. We improve upon this through clustering analysis, predictive modeling, and interactive visualizations that make comparative analyses accessible to broader audiences while accounting for multiple factors including manufacturer, time, antibody type, and prevalence.
+
+Earlier research established benchmarks for COVID-19 antibody test accuracy, developed spike-protein ELISA tests, and emphasized independent validation and combining IgG/IgM results, with Stone et al. (2022) comparing 21 commercial tests and revealing large performance gaps. A fundamental challenge persists: physicians struggle to distinguish sensitivity/specificity from predictive values, achieving only 8% accuracy in probability estimations and sometimes overestimating post-test disease probability by nearly tenfold, while commonly equating PPV with sensitivity and failing to account for prevalence effects. Studies show testing accuracy varies with multiple conditions: disease prevalence affects interpretation, antibody levels change over time, infection timing strongly affects results, and there are differences between viral protein targets and test administration methods (self-administered versus clinician-administered). Data visualization research supports using standardized FDA data and demonstrates how dashboard design influences public understanding, justifying our goal to create clear, interactive visuals comparing antibody test accuracy across manufacturers, antibody types, and time. While the dataset has limitations—samples concentrated in early-mid 2020, lacks patient covariates like vaccination status, and potential ELISA gold standard misclassification—the framework demonstrates broad applicability beyond COVID-19 for making complex diagnostic test limitations transparent and contextual without sacrificing comprehensibility.
 
 ## Repository Structure
 
@@ -45,7 +49,11 @@ D3Visual/
 └── index.html             # Main entry point
 ```
 
-## Quick Start
+## Installation and execution
+
+### The Easy Way
+
+This repository is publically available at [covidtesting.pikemd.com](https://covidtesting.pikemd.com/).
 
 ### Requirements
 
