@@ -4,7 +4,7 @@
 
 ## Project Overview
 
-This project provides interactive D3.js visualizations for analyzing COVID-19 antibody test performance metrics, including exploratory data analysis, FDA test comparisons, prevalence modeling, and clustering analysis.
+This project provides interactive D3.js visualizations for analyzing COVID-19 antibody test performance metrics, including exploratory data analysis, FDA test comparisons, prevalence modeling, clustering analysis, and a manufacturer based analysis.
 
 ## Repository Structure
 
@@ -36,31 +36,13 @@ D3Visual/
 
 ## Quick Start
 
-### Prerequisites
+```bash
+# **Navigate to the project directory:**
+cd /path/to/cse6242-team124-courseproject
 
-- Python 3.x (for running local HTTP server)
-- Modern web browser (Chrome, Firefox, Safari, or Edge)
-
-### Running the Visualizations
-
-1. **Navigate to the project directory:**
-
-   ```bash
-   cd /path/to/cse6242-team124-courseproject
-   ```
-
-2. **Start a local HTTP server:**
-
-   ```bash
-   python3 -m http.server 8000
-   ```
-
-3. **Open in your browser:**
-   - Main index: http://localhost:8000/D3Visual/index.html
-   - EDA: http://localhost:8000/D3Visual/0-EDA/
-   - FDA: http://localhost:8000/D3Visual/1-FDA/
-   - Prevalence: http://localhost:8000/D3Visual/2-Prevalence/
-   - Clustering: http://localhost:8000/D3Visual/3-Clusters_Scatter/
+# **Start a local HTTP server:**
+python3 -m http.server 8000
+```
 
 ## Visualization Modules
 
@@ -83,10 +65,3 @@ See [2-Prevalence/README.md](D3Visual/2-Prevalence/README.md) for detailed setup
 Visual analysis of test performance using scatterplots, K-means clustering (k=6), and elbow method charts for both IgG and IgM antibody tests.
 
 See [3-Clusters_Scatter/README.md](D3Visual/3-Clusters_Scatter/README.md) for detailed setup instructions.
-
-## Technologies Used
-
-- **D3.js** - Data visualization
-- **Plotly** - Interactive charts
-- **Python HTTP Server** - Local development server
-- **CSV** - Data storage format
