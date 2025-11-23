@@ -55,7 +55,7 @@ D3Visual/
 
 ```bash
 # **Navigate to the project directory:**
-cd /path/to/cse6242-team124-courseproject
+cd /path/to/covid-serology-analysis
 
 # **Start a local HTTP server:**
 uvx python -m http.server 8000
