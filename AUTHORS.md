@@ -7,18 +7,23 @@ This project was developed by Team 124 for CSE 6242 (Data and Visual Analytics) 
 Listed alphabetically by last name:
 
 - **Rohit Bodhare**
+
   - GitHub: [@rbodhare](https://github.com/rbodhare)
 
 - **Tianwei Ji**
+
   - GitHub: [@JasonJi1010](https://github.com/JasonJi1010)
 
 - **Ehsanul Khan**
+
   - GitHub: [@ekhan128](https://github.com/ekhan128)
 
 - **Colin O'Laughlin**
+
   - GitHub: [@colin-olaughlin](https://github.com/colin-olaughlin)
 
 - **Will Pike**
+
   - GitHub: [@pike00](https://github.com/pike00)
 
 - **Justin Weng**
@@ -39,3 +44,5 @@ This project represents collaborative work across data analysis, visualization d
 - Interactive D3.js visualizations
 - Statistical modeling and clustering
 - Documentation and testing
+
+All team member contributions were similar.
