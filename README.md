@@ -11,26 +11,37 @@ This project provides interactive D3.js visualizations for analyzing COVID-19 an
 ```
 D3Visual/
 ├── 0-EDA/                  # Exploratory Data Analysis
-│   ├── D3_EDA_Part1.html  # Initial EDA visualizations
+│   ├── eda.html           # Interactive D3 visualizations with filters
 │   ├── edaR/              # R-based EDA components
+│   │   └── eda.html       # Quarto-generated statistical analysis
 │   └── index.html
 │
 ├── 1-FDA/                  # FDA Test Data
-│   ├── fda_table.html     # FDA serology test comparison table
+│   ├── fda.html           # FDA serology test comparison table
 │   └── index.html
 │
 ├── 2-Prevalence/           # Prevalence & Predictive Value Analysis
 │   ├── prevalence.html    # Interactive PPV/NPV visualization
-│   ├── prevalence_FilterType.html
+│   ├── index.html
 │   └── README.md          # Setup instructions
 │
 ├── 3-Clusters_Scatter/     # Clustering & Scatter Analysis
-│   ├── D3_EDA_Part2.html  # Scatter and cluster visualizations
-│   ├── D3_EDA_Part2_FilterType.html
-│   ├── *.csv              # IgG/IgM metrics and clustering data
+│   ├── clusters.html      # Interactive scatter and cluster visualizations
+│   ├── accuracy_clusters.html  # Clustering analysis notebook (rendered)
+│   ├── accuracy_clusters_and_predicted_values.ipynb
+│   ├── index.html
 │   └── README.md          # Setup instructions
 │
-├── _lib/                   # Shared libraries
+├── 4-Manufacturer/         # Manufacturer Difference Analysis
+│   ├── manufacturer_analysis.html  # Statistical analysis (rendered)
+│   ├── manufacturer_difference_analysis.ipynb
+│   └── index.html
+│
+├── _lib/                   # Shared D3 libraries
+│   ├── d3/
+│   ├── d3-dsv/
+│   └── d3-fetch/
+│
 └── index.html             # Main entry point
 ```
 
@@ -68,6 +79,10 @@ See [2-Prevalence/README.md](D3Visual/2-Prevalence/README.md) for detailed setup
 
 ### 3-Clusters_Scatter: K-Means Clustering
 
-Visual analysis of test performance using scatterplots, K-means clustering (k=6), and elbow method charts for both IgG and IgM antibody tests.
+Visual analysis of test performance using scatterplots, K-means clustering (k=6), and elbow method charts for both IgG and IgM antibody tests. Includes comprehensive clustering analysis with multiple methods (K-Means, DBSCAN, GMM, Hierarchical) and predictive value calculations.
 
 See [3-Clusters_Scatter/README.md](D3Visual/3-Clusters_Scatter/README.md) for detailed setup instructions.
+
+### 4-Manufacturer: Manufacturer Difference Analysis
+
+Statistical analysis comparing test performance metrics across different manufacturers. Includes hypothesis testing, significance analysis, and visualizations showing differences in test accuracy, sensitivity, and specificity between manufacturers.
