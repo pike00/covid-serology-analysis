@@ -1,7 +1,7 @@
 [project]
-name = "cse6242-team124-courseproject"
-version = "0.1.0"
-description = "Add your description here"
+name = "covid-serology-analysis"
+version = "1.0.0"
+description = "Interactive D3.js visualizations for analyzing COVID-19 antibody test performance metrics, including exploratory data analysis, FDA test comparisons, prevalence modeling, and clustering analysis."
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
